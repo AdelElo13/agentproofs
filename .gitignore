@@ -3,3 +3,4 @@ dist
 .agentproofs
 *.tsbuildinfo
 coverage
+.playwright-mcp/
