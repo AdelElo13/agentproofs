@@ -8,6 +8,17 @@
   "bin": {
     "agentproofs": "./bin/cli.mjs"
   },
+  "files": [
+    "dist",
+    "bin",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AdelElo13/agentproofs.git"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
