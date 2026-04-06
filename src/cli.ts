@@ -369,6 +369,69 @@ async function cmdSegments(config: AgentproofsConfig): Promise<void> {
   console.log(`  Last hash:       ${dim(state.lastHash)}`);
 }
 
+async function cmdSync(config: AgentproofsConfig, args: string[]): Promise<void> {
+  let target = '';
+  let token = '';
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--to' && args[i + 1]) target = args[++i];
+    if (args[i] === '--token' && args[i + 1]) token = args[++i];
+  }
+
+  if (!target) {
+    console.error('Usage: npx agentproofs sync --to <url> --token <api-token>');
+    console.error('Example: npx agentproofs sync --to https://agentproofs.io --token ap_abc123...');
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!token) {
+    console.error('Missing --token. Create one at your dashboard settings.');
+    process.exitCode = 1;
+    return;
+  }
+
+  // Read all entries
+  const entries = await readAllEntries(config.dataDir);
+  if (entries.length === 0) {
+    console.log(dim('No proofs to sync.'));
+    return;
+  }
+
+  console.log(dim(`Syncing ${entries.length} proofs to ${target}...`));
+
+  // Send as JSONL
+  const body = entries.map((e) => JSON.stringify(e)).join('\n');
+  const syncUrl = target.replace(/\/$/, '') + '/api/chain/sync';
+
+  try {
+    const response = await fetch(syncUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/jsonl',
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: response.statusText }));
+      console.error(red('\u2717') + ` Sync failed: ${(error as any).error ?? response.statusText}`);
+      process.exitCode = 1;
+      return;
+    }
+
+    const result = await response.json() as { proofs: number; agent_id: string };
+    console.log(green('\u2713') + ` Synced ${bold(String(result.proofs))} proofs`);
+    console.log(`  Agent: ${result.agent_id}`);
+    console.log(`  Target: ${target}`);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(red('\u2717') + ` Sync failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
 function printHelp(): void {
   console.log(`
 ${bold('agentproofs')} — Signed, hash-chained proof logs for AI agent actions
@@ -389,6 +452,7 @@ ${bold('COMMANDS')}
   ${bold('pubkey')}             Print public key
   ${bold('keys')}               List all keys
   ${bold('segments')}           List chain segments
+  ${bold('sync')}               Sync chain to agentproofs.io
 
 ${bold('VERIFY OPTIONS')}
   --from <seq>         Start verification from sequence
@@ -483,6 +547,9 @@ export async function cli(argv: string[]): Promise<void> {
       break;
     case 'segments':
       await cmdSegments(config);
+      break;
+    case 'sync':
+      await cmdSync(config, args);
       break;
     default:
       console.error(`Unknown command: ${command}`);

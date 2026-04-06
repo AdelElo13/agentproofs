@@ -1,0 +1,2 @@
+[     586ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://mijn.antagonist.nl/accounts/login/?next=/:0
+[   25914ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://mijn.antagonist.nl/accounts/login/?next=/:0

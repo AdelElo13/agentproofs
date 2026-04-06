@@ -1,0 +1,41 @@
+[    4245ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/login:0
+[   21262ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/login:0
+[  155474ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/login:0
+[  236987ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  236992ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  240532ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/login/token-verify:0
+[  244473ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/login/token-verify:0
+[  298102ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  298103ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  304618ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/:0
+[  316418ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  316419ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  320479ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/domains:0
+[  331591ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  331592ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  336349ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/domains/2013809/overview:0
+[  352900ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  352903ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  356466ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/domains/2013809/nameserver:0
+[  359981ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/domains/2013809/nameserver:0
+[  410174ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://onehome.antagonist.nl/api/zendeskwidget/token:0
+[  410176ms] SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchJwtToken (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:2393)
+    at async HTMLScriptElement.<anonymous> (https://onehome.antagonist.nl/build/assets/useLayout-hZIGzzR8.js:1:3801)
+[  415150ms] [WARNING] The resource https://onehome.antagonist.nl/build/assets/app-DkbYESwS.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://onehome.antagonist.nl/domains/2013809/overview:0

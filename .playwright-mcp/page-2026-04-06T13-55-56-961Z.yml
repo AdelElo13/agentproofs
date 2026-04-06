@@ -1,0 +1,130 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e1464]:
+      - generic [ref=e1465]:
+        - link "oneHome" [ref=e1467] [cursor=pointer]:
+          - /url: https://onehome.antagonist.nl
+          - img [ref=e1469]
+        - navigation [ref=e1482]:
+          - list [ref=e1483]:
+            - listitem [ref=e1484]:
+              - link "Home" [ref=e1485] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/
+            - listitem [ref=e1486]:
+              - link "Facturering" [ref=e1487] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/billing
+            - listitem [ref=e1488]:
+              - link "Support" [ref=e1489] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/support
+        - generic [ref=e1490]:
+          - button "Meldingen 0" [ref=e1491] [cursor=pointer]:
+            - generic [ref=e1492]: Meldingen
+            - img [ref=e1494]
+            - generic [ref=e1496]: "0"
+          - link "De winkelmand is leeg, klik om naar de winkelmandpagina te gaan." [ref=e1498] [cursor=pointer]:
+            - /url: /basket
+            - img [ref=e1500]
+            - generic [ref=e1502]: "0"
+          - button "Account Account" [ref=e1503] [cursor=pointer]:
+            - generic [ref=e1504]: Account
+            - img [ref=e1506]
+            - generic [ref=e1508]: Account
+    - generic [ref=e1509]:
+      - generic [ref=e1510]:
+        - navigation "Navigatie" [ref=e1513]:
+          - generic [ref=e1514]: Navigatie
+          - list [ref=e1515]:
+            - listitem [ref=e1516]:
+              - link "Home" [ref=e1517] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/
+                - img [ref=e1519]
+                - generic [ref=e1521]: Home
+        - navigation "Domeinen" [ref=e1523]:
+          - generic [ref=e1524]: Domeinen
+          - list [ref=e1525]:
+            - listitem [ref=e1526]:
+              - link "Overzicht" [ref=e1527] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/overview
+                - img [ref=e1529]
+                - generic [ref=e1531]: Overzicht
+            - listitem [ref=e1532]:
+              - link "DNS" [ref=e1533] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/dns
+                - img [ref=e1535]
+                - generic [ref=e1537]: DNS
+            - listitem [ref=e1538]:
+              - link "Domeinnaam doorsturen" [ref=e1539] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/forwarding
+                - img [ref=e1541]
+                - generic [ref=e1543]: Domeinnaam doorsturen
+            - listitem [ref=e1544]:
+              - link "E-mail doorsturen" [ref=e1545] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/emailForwarding
+                - img [ref=e1547]
+                - generic [ref=e1549]: E-mail doorsturen
+            - listitem [ref=e1550]:
+              - link "Nameservers" [ref=e1551] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/nameserver
+                - img [ref=e1553]
+                - generic [ref=e1555]: Nameservers
+            - listitem [ref=e1556]:
+              - link "E-mailinstellingen" [ref=e1557] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains/2013809/email-settings
+                - img [ref=e1559]
+                - generic [ref=e1561]: E-mailinstellingen
+      - generic [ref=e1563]:
+        - generic [ref=e1564]:
+          - navigation "Broodkruimelnavigatie" [ref=e1565]:
+            - list [ref=e1566]:
+              - listitem [ref=e1567]:
+                - link "Home" [ref=e1568] [cursor=pointer]:
+                  - /url: /
+                - img [ref=e1570]
+              - listitem [ref=e1572]:
+                - link "Domeinen" [ref=e1573] [cursor=pointer]:
+                  - /url: https://onehome.antagonist.nl/domains
+                - img [ref=e1575]
+              - listitem [ref=e1577]:
+                - link "agentproofs.io" [ref=e1578] [cursor=pointer]:
+                  - /url: https://onehome.antagonist.nl/domains/2013809/overview
+                - img [ref=e1580]
+              - listitem [ref=e1582]:
+                - generic [ref=e1583]: Nameservers
+          - generic [ref=e1585]:
+            - heading "Nameservers" [level=1] [ref=e1586]
+            - heading [level=2]
+        - main [ref=e1588]:
+          - generic [ref=e1590]:
+            - generic [ref=e1591]: Eigen nameservers
+            - paragraph [ref=e1592]:
+              - strong [ref=e1593]: "Let op:"
+              - text: Door de nameservers te wijzigen, kan je domein onbereikbaar worden.
+            - generic [ref=e1594]:
+              - textbox "Nameserver 1" [ref=e1597]:
+                - /placeholder: "Nameserver 1 "
+                - text: ns1.vercel-dns.com
+              - textbox "Nameserver 2" [ref=e1600]:
+                - /placeholder: "Nameserver 2 "
+                - text: ns2.vercel-dns.com
+              - textbox "Nameserver 3 (optioneel)" [ref=e1603]
+              - textbox "Nameserver 4 (optioneel)" [ref=e1606]
+          - generic [ref=e1607]:
+            - button "Terugzetten naar standaard"
+            - button "Opslaan" [active]
+    - contentinfo [ref=e1610]:
+      - generic [ref=e1612]:
+        - generic [ref=e1613]:
+          - img [ref=e1615]
+          - paragraph [ref=e1622]: Vragen? We helpen je graag.
+        - button "Start chat" [ref=e1623] [cursor=pointer]
+      - generic [ref=e1625]:
+        - list [ref=e1626]:
+          - listitem [ref=e1627]:
+            - link "Juridische informatie" [ref=e1628] [cursor=pointer]:
+              - /url: https://onehome.antagonist.nl/legal
+          - listitem
+        - generic [ref=e1629]: Copyright © 2026 oneHome - 2026.06.03.00. All rights reserved
+  - iframe [ref=e144]:
+    - button "Open messaging window" [ref=f6e5] [cursor=pointer]:
+      - img [ref=f6e7]
+      - img [ref=f6e10]

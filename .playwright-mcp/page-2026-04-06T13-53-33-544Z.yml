@@ -1,0 +1,25 @@
+- generic [ref=e2]:
+  - banner [ref=e95]:
+    - generic [ref=e96]:
+      - link [ref=e98] [cursor=pointer]:
+        - /url: /login
+        - img [ref=e101]
+      - combobox [ref=e116] [cursor=pointer]:
+        - text: NL
+        - img [ref=e118]
+  - generic [ref=e123]:
+    - generic [ref=e124]:
+      - generic [ref=e125]: Verifieer je apparaat
+      - generic [ref=e126]: Voer de verificatiecode in die we naar je e-mailadres hebben gestuurd.
+    - generic [ref=e127]:
+      - generic [ref=e129]:
+        - generic [ref=e130]: Je beveiligingscode
+        - textbox "Je beveiligingscode" [ref=e132]
+      - button "Bevestigen" [ref=e134] [cursor=pointer]
+    - generic [ref=e135]:
+      - button "Code opnieuw verzenden" [ref=e136] [cursor=pointer]:
+        - img [ref=e138]
+        - text: Code opnieuw verzenden
+      - button "Uitloggen" [ref=e140] [cursor=pointer]:
+        - img [ref=e142]
+        - text: Uitloggen

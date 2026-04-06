@@ -1,0 +1,37 @@
+- generic [ref=e1]:
+  - link "Accessibility":
+    - /url: /preferences/
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link:
+          - /url: https://antagonist.nl/
+          - img [ref=e5] [cursor=pointer]
+        - img [ref=e6]
+        - heading "Welcome to My Antagonist" [level=2] [ref=e7]
+        - separator [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - textbox "Email address or Customer ID" [active] [ref=e11]:
+              - /placeholder: janjansen@voorbeeld.nl or 12345
+            - generic [ref=e12]: Email address or Customer ID
+          - generic [ref=e13]:
+            - textbox "Password" [ref=e14]:
+              - /placeholder: Type here...
+            - generic [ref=e15]: Password
+          - button "Login" [ref=e16] [cursor=pointer]
+          - link "Forgot password?" [ref=e17] [cursor=pointer]:
+            - /url: /reset_password/
+        - generic [ref=e19]:
+          - link "Preferences and accessibility" [ref=e20] [cursor=pointer]:
+            - /url: /preferences/
+            - img "Preferences and accessibility" [ref=e21]
+          - link "Login help" [ref=e22] [cursor=pointer]:
+            - /url: https://www.antagonist.nl/help/nl/admin/login/myantagonist
+            - img "Login help" [ref=e23]
+      - generic [ref=e25]:
+        - link "Terms and conditions" [ref=e26] [cursor=pointer]:
+          - /url: /terms/
+        - text: "|"
+        - link "Privacy statement" [ref=e27] [cursor=pointer]:
+          - /url: /privacy/

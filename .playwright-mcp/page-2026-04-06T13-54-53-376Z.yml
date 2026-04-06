@@ -1,0 +1,314 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e393]:
+      - generic [ref=e394]:
+        - link "oneHome" [ref=e396] [cursor=pointer]:
+          - /url: https://onehome.antagonist.nl
+          - img [ref=e398]
+        - navigation [ref=e411]:
+          - list [ref=e412]:
+            - listitem [ref=e413]:
+              - link "Home" [ref=e414] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/
+            - listitem [ref=e415]:
+              - link "Facturering" [ref=e416] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/billing
+            - listitem [ref=e417]:
+              - link "Support" [ref=e418] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/support
+        - generic [ref=e419]:
+          - button "Meldingen 0" [ref=e420] [cursor=pointer]:
+            - generic [ref=e421]: Meldingen
+            - img [ref=e423]
+            - generic [ref=e425]: "0"
+          - link "De winkelmand is leeg, klik om naar de winkelmandpagina te gaan." [ref=e427] [cursor=pointer]:
+            - /url: /basket
+            - img [ref=e429]
+            - generic [ref=e431]: "0"
+          - button "Account Account" [ref=e432] [cursor=pointer]:
+            - generic [ref=e433]: Account
+            - img [ref=e435]
+            - generic [ref=e437]: Account
+    - generic [ref=e438]:
+      - generic [ref=e439]:
+        - navigation "Navigatie" [ref=e442]:
+          - generic [ref=e443]: Navigatie
+          - list [ref=e444]:
+            - listitem [ref=e445]:
+              - link "Home" [ref=e446] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/
+                - img [ref=e448]
+                - generic [ref=e450]: Home
+        - navigation "Mijn producten" [ref=e452]:
+          - generic [ref=e453]: Mijn producten
+          - list [ref=e454]:
+            - listitem [ref=e455]:
+              - link "Websites" [ref=e456] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/websites
+                - img [ref=e458]
+                - generic [ref=e460]: Websites
+            - listitem [ref=e461]:
+              - link "Domeinen" [ref=e462] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/domains
+                - img [ref=e464]
+                - generic [ref=e466]: Domeinen
+            - listitem [ref=e467]:
+              - link "E-mail" [ref=e468] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/mail
+                - img [ref=e470]
+                - generic [ref=e472]: E-mail
+            - listitem [ref=e473]:
+              - link "Online opslag" [ref=e474] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/online-storage
+                - img [ref=e476]
+                - generic [ref=e478]: Online opslag
+            - listitem [ref=e479]:
+              - link "Resellerhosting" [ref=e480] [cursor=pointer]:
+                - /url: https://onehome.antagonist.nl/reseller
+                - img [ref=e482]
+                - generic [ref=e484]: Resellerhosting
+      - generic [ref=e486]:
+        - generic [ref=e487]:
+          - navigation "Broodkruimelnavigatie" [ref=e488]:
+            - list [ref=e489]:
+              - listitem [ref=e490]:
+                - link "Home" [ref=e491] [cursor=pointer]:
+                  - /url: /
+                - img [ref=e493]
+              - listitem [ref=e495]:
+                - generic [ref=e496]: Domeinen
+          - generic [ref=e498]:
+            - heading "Domeinen" [level=1] [ref=e499]
+            - heading [level=2]
+        - main [ref=e501]:
+          - generic [ref=e502]:
+            - button "Show popup" [ref=e507] [cursor=pointer]:
+              - button "Status" [ref=e508]:
+                - generic [ref=e509]: Status
+                - img [ref=e511]
+            - generic [ref=e515]:
+              - textbox "Zoeken" [ref=e516]
+              - button [ref=e517] [cursor=pointer]:
+                - img [ref=e520]
+          - generic [ref=e523]:
+            - table [ref=e524]:
+              - rowgroup [ref=e525]:
+                - row "Naam Gekoppeld aan Status Acties" [ref=e526]:
+                  - columnheader "Naam" [ref=e527]
+                  - columnheader "Gekoppeld aan" [ref=e528]
+                  - columnheader "Status" [ref=e529]
+                  - columnheader [ref=e530]
+                  - columnheader "Acties" [ref=e531]:
+                    - generic [ref=e532]: Acties
+              - rowgroup [ref=e533]:
+                - 'row "open-jarvis.com Abonnementnr.: 2011806 Plus 2012406 Actief" [ref=e534]':
+                  - 'cell "open-jarvis.com Abonnementnr.: 2011806" [ref=e535]':
+                    - generic [ref=e537]:
+                      - generic "open-jarvis.com" [ref=e538]
+                      - generic [ref=e539]: "Abonnementnr.: 2011806"
+                  - cell "Plus 2012406" [ref=e540]:
+                    - generic [ref=e541]: Plus
+                    - generic [ref=e542]: "2012406"
+                  - cell "Actief" [ref=e543]:
+                    - generic [ref=e546]: Actief
+                  - cell [ref=e547]
+                  - cell [ref=e548]:
+                    - generic [ref=e549]:
+                      - button [ref=e550] [cursor=pointer]:
+                        - img [ref=e552]
+                      - link [ref=e554] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2011806
+                        - img [ref=e556]
+                - 'row "dockwright.com Abonnementnr.: 2012803 Plus 2012406 Actief" [ref=e558]':
+                  - 'cell "dockwright.com Abonnementnr.: 2012803" [ref=e559]':
+                    - generic [ref=e561]:
+                      - generic "dockwright.com" [ref=e562]
+                      - generic [ref=e563]: "Abonnementnr.: 2012803"
+                  - cell "Plus 2012406" [ref=e564]:
+                    - generic [ref=e565]: Plus
+                    - generic [ref=e566]: "2012406"
+                  - cell "Actief" [ref=e567]:
+                    - generic [ref=e570]: Actief
+                  - cell [ref=e571]
+                  - cell [ref=e572]:
+                    - generic [ref=e573]:
+                      - button [ref=e574] [cursor=pointer]:
+                        - img [ref=e576]
+                      - link [ref=e578] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2012803
+                        - img [ref=e580]
+                - 'row "coffeeshopmenus.com Abonnementnr.: 2013466 Plus 2013469 Actief" [ref=e582]':
+                  - 'cell "coffeeshopmenus.com Abonnementnr.: 2013466" [ref=e583]':
+                    - generic [ref=e585]:
+                      - generic "coffeeshopmenus.com" [ref=e586]
+                      - generic [ref=e587]: "Abonnementnr.: 2013466"
+                  - cell "Plus 2013469" [ref=e588]:
+                    - generic [ref=e589]: Plus
+                    - generic [ref=e590]: "2013469"
+                  - cell "Actief" [ref=e591]:
+                    - generic [ref=e594]: Actief
+                  - cell [ref=e595]
+                  - cell [ref=e596]:
+                    - generic [ref=e597]:
+                      - button [ref=e598] [cursor=pointer]:
+                        - img [ref=e600]
+                      - link [ref=e602] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013466
+                        - img [ref=e604]
+                - 'row "budbode.com Abonnementnr.: 2013476 Niet gekoppeld Actief" [ref=e606]':
+                  - 'cell "budbode.com Abonnementnr.: 2013476" [ref=e607]':
+                    - generic [ref=e609]:
+                      - generic "budbode.com" [ref=e610]
+                      - generic [ref=e611]: "Abonnementnr.: 2013476"
+                  - cell "Niet gekoppeld" [ref=e612]:
+                    - generic [ref=e613]: Niet gekoppeld
+                  - cell "Actief" [ref=e614]:
+                    - generic [ref=e617]: Actief
+                  - cell [ref=e618]
+                  - cell [ref=e619]:
+                    - generic [ref=e620]:
+                      - button [ref=e621] [cursor=pointer]:
+                        - img [ref=e623]
+                      - link [ref=e625] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013476
+                        - img [ref=e627]
+                - 'row "muhammadfund.com Abonnementnr.: 2013762 Niet gekoppeld Actief" [ref=e629]':
+                  - 'cell "muhammadfund.com Abonnementnr.: 2013762" [ref=e630]':
+                    - generic [ref=e632]:
+                      - generic "muhammadfund.com" [ref=e633]
+                      - generic [ref=e634]: "Abonnementnr.: 2013762"
+                  - cell "Niet gekoppeld" [ref=e635]:
+                    - generic [ref=e636]: Niet gekoppeld
+                  - cell "Actief" [ref=e637]:
+                    - generic [ref=e640]: Actief
+                  - cell [ref=e641]
+                  - cell [ref=e642]:
+                    - generic [ref=e643]:
+                      - button [ref=e644] [cursor=pointer]:
+                        - img [ref=e646]
+                      - link [ref=e648] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013762
+                        - img [ref=e650]
+                - 'row "agentlenz.dev Abonnementnr.: 2013220 Plus 2012406 Actief" [ref=e652]':
+                  - 'cell "agentlenz.dev Abonnementnr.: 2013220" [ref=e653]':
+                    - generic [ref=e655]:
+                      - generic "agentlenz.dev" [ref=e656]
+                      - generic [ref=e657]: "Abonnementnr.: 2013220"
+                  - cell "Plus 2012406" [ref=e658]:
+                    - generic [ref=e659]: Plus
+                    - generic [ref=e660]: "2012406"
+                  - cell "Actief" [ref=e661]:
+                    - generic [ref=e664]: Actief
+                  - cell [ref=e665]
+                  - cell [ref=e666]:
+                    - generic [ref=e667]:
+                      - button [ref=e668] [cursor=pointer]:
+                        - img [ref=e670]
+                      - link [ref=e672] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013220
+                        - img [ref=e674]
+                - 'row "agentproofs.io Abonnementnr.: 2013809 Niet gekoppeld Actief" [ref=e676]':
+                  - 'cell "agentproofs.io Abonnementnr.: 2013809" [ref=e677]':
+                    - generic [ref=e679]:
+                      - generic "agentproofs.io" [ref=e680]
+                      - generic [ref=e681]: "Abonnementnr.: 2013809"
+                  - cell "Niet gekoppeld" [ref=e682]:
+                    - generic [ref=e683]: Niet gekoppeld
+                  - cell "Actief" [ref=e684]:
+                    - generic [ref=e687]: Actief
+                  - cell [ref=e688]
+                  - cell [ref=e689]:
+                    - generic [ref=e690]:
+                      - button [ref=e691] [cursor=pointer]:
+                        - img [ref=e693]
+                      - link [ref=e695] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013809
+                        - img [ref=e697]
+                - 'row "budbode.nl Abonnementnr.: 2013475 Niet gekoppeld Actief" [ref=e699]':
+                  - 'cell "budbode.nl Abonnementnr.: 2013475" [ref=e700]':
+                    - generic [ref=e702]:
+                      - generic "budbode.nl" [ref=e703]
+                      - generic [ref=e704]: "Abonnementnr.: 2013475"
+                  - cell "Niet gekoppeld" [ref=e705]:
+                    - generic [ref=e706]: Niet gekoppeld
+                  - cell "Actief" [ref=e707]:
+                    - generic [ref=e710]: Actief
+                  - cell [ref=e711]
+                  - cell [ref=e712]:
+                    - generic [ref=e713]:
+                      - button [ref=e714] [cursor=pointer]:
+                        - img [ref=e716]
+                      - link [ref=e718] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013475
+                        - img [ref=e720]
+                - 'row "coffeeshopempire.nl Abonnementnr.: 2013500 Plus 2013469 Actief" [ref=e722]':
+                  - 'cell "coffeeshopempire.nl Abonnementnr.: 2013500" [ref=e723]':
+                    - generic [ref=e725]:
+                      - generic "coffeeshopempire.nl" [ref=e726]
+                      - generic [ref=e727]: "Abonnementnr.: 2013500"
+                  - cell "Plus 2013469" [ref=e728]:
+                    - generic [ref=e729]: Plus
+                    - generic [ref=e730]: "2013469"
+                  - cell "Actief" [ref=e731]:
+                    - generic [ref=e734]: Actief
+                  - cell [ref=e735]
+                  - cell [ref=e736]:
+                    - generic [ref=e737]:
+                      - button [ref=e738] [cursor=pointer]:
+                        - img [ref=e740]
+                      - link [ref=e742] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013500
+                        - img [ref=e744]
+                - 'row "dakdeel.nl Abonnementnr.: 2013777 Niet gekoppeld Actief" [ref=e746]':
+                  - 'cell "dakdeel.nl Abonnementnr.: 2013777" [ref=e747]':
+                    - generic [ref=e749]:
+                      - generic "dakdeel.nl" [ref=e750]
+                      - generic [ref=e751]: "Abonnementnr.: 2013777"
+                  - cell "Niet gekoppeld" [ref=e752]:
+                    - generic [ref=e753]: Niet gekoppeld
+                  - cell "Actief" [ref=e754]:
+                    - generic [ref=e757]: Actief
+                  - cell [ref=e758]
+                  - cell [ref=e759]:
+                    - generic [ref=e760]:
+                      - button [ref=e761] [cursor=pointer]:
+                        - img [ref=e763]
+                      - link [ref=e765] [cursor=pointer]:
+                        - /url: https://onehome.antagonist.nl/domains/2013777
+                        - img [ref=e767]
+            - generic [ref=e769]:
+              - navigation "Paginering" [ref=e770]:
+                - list [ref=e771]:
+                  - listitem [ref=e772]:
+                    - button "Vorige" [disabled]:
+                      - generic:
+                        - img
+                  - listitem [ref=e773]:
+                    - button "1"
+                  - listitem [ref=e774]:
+                    - button "2" [ref=e775] [cursor=pointer]
+                  - listitem [ref=e776]:
+                    - button "Volgende" [ref=e777] [cursor=pointer]:
+                      - img [ref=e779]
+              - generic [ref=e781]:
+                - generic [ref=e782]: Weergeven
+                - combobox [ref=e784] [cursor=pointer]:
+                  - generic [ref=e785]: "10"
+                  - img [ref=e788]
+    - contentinfo [ref=e790]:
+      - generic [ref=e792]:
+        - generic [ref=e793]:
+          - img [ref=e795]
+          - paragraph [ref=e802]: Vragen? We helpen je graag.
+        - button "Start chat" [ref=e803] [cursor=pointer]
+      - generic [ref=e805]:
+        - list [ref=e806]:
+          - listitem [ref=e807]:
+            - link "Juridische informatie" [ref=e808] [cursor=pointer]:
+              - /url: https://onehome.antagonist.nl/legal
+          - listitem
+        - generic [ref=e809]: Copyright © 2026 oneHome - 2026.06.03.00. All rights reserved
+  - iframe [ref=e144]:
+    - button "Open messaging window" [ref=f6e5] [cursor=pointer]:
+      - img [ref=f6e7]
+      - img [ref=f6e10]

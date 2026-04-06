@@ -1,0 +1,34 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link [ref=e6] [cursor=pointer]:
+        - /url: /login
+        - img [ref=e82]
+      - combobox [ref=e24] [cursor=pointer]:
+        - text: EN
+        - img [ref=e26]
+  - generic [ref=e31]:
+    - generic [ref=e32]:
+      - generic [ref=e33]: Log into your account
+      - generic [ref=e34]: Log in with your username or sign-in name, depending on your account settings.
+    - generic [ref=e73]:
+      - img [ref=e75]
+      - list [ref=e78]:
+        - listitem [ref=e79]: The login ID and password do not match. Please try again.
+    - generic [ref=e35]:
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: Login ID
+          - link "Forgot your login ID" [ref=e40] [cursor=pointer]:
+            - /url: https://onehome.antagonist.nl/forgot-usernames
+        - textbox "Login ID" [ref=e42]: Moderator1981
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: Password
+          - link "Forgot your password" [ref=e47] [cursor=pointer]:
+            - /url: https://onehome.antagonist.nl/forgot-password
+        - textbox "Password" [ref=e49]
+      - generic [ref=e52]:
+        - checkbox "Keep me logged in" [ref=e53] [cursor=pointer]
+        - generic [ref=e55] [cursor=pointer]: Keep me logged in
+      - button "Log in" [active] [ref=e57] [cursor=pointer]
