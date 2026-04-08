@@ -1,6 +1,6 @@
 {
   "name": "agentproofs",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Signed, hash-chained proof logs for AI agent tool executions and auditable events. MCP-native. Local-first.",
   "type": "module",
   "main": "dist/index.js",
