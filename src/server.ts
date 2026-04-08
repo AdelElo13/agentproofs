@@ -4,6 +4,8 @@ import { createDaemon, daemonAppend, type DaemonState } from './daemon.ts';
 import { verifyChain } from './chain.ts';
 import { queryProofs } from './query.ts';
 import { exportProofs } from './export.ts';
+import { auditChain } from './verifier.ts';
+import { generateComplianceReport, formatReportAsMarkdown } from './compliance.ts';
 import { formatPublicKey } from './crypto.ts';
 import {
   getChainStatus,
@@ -169,6 +171,41 @@ export async function createMcpServer(config: AgentproofsConfig): Promise<{
 
       return {
         content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+      };
+    },
+  );
+
+  server.tool(
+    'proof_audit',
+    'Audit a JSONL chain export — validates hashes, signatures, timestamps, and sequences, returns a signed report',
+    {
+      chain_jsonl: z.string().describe('JSONL chain data (raw string or file path)'),
+    },
+    async (params) => {
+      const keys = new Map([[daemon.keyPair.keyId, daemon.keyPair.publicKey]]);
+      const report = await auditChain(params.chain_jsonl, keys, daemon.keyPair);
+
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify(report, null, 2) }],
+      };
+    },
+  );
+
+  server.tool(
+    'proof_compliance_report',
+    'Generate an EU AI Act Article 12 compliance report from the proof chain',
+    {
+      format: z.enum(['json', 'markdown']).optional().describe('Output format (default: json)'),
+    },
+    async (params) => {
+      const report = await generateComplianceReport(config);
+      const fmt = params.format ?? 'json';
+      const output = fmt === 'markdown'
+        ? formatReportAsMarkdown(report)
+        : JSON.stringify(report, null, 2);
+
+      return {
+        content: [{ type: 'text' as const, text: output }],
       };
     },
   );

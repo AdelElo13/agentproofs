@@ -9,12 +9,14 @@ import {
 } from './chain.ts';
 import { queryProofs } from './query.ts';
 import { exportProofs } from './export.ts';
+import { auditChain } from './verifier.ts';
 import {
   loadOrCreateKeyPair,
   formatPublicKey,
   generateChainId,
 } from './crypto.ts';
 import { getStats } from './resources.ts';
+import { generateComplianceReport, formatReportAsMarkdown } from './compliance.ts';
 import type { AgentproofsConfig, EventType, QueryParams } from './types.ts';
 import { EVENT_TYPES } from './types.ts';
 
@@ -432,6 +434,83 @@ async function cmdSync(config: AgentproofsConfig, args: string[]): Promise<void>
   }
 }
 
+async function cmdAudit(config: AgentproofsConfig, args: string[]): Promise<void> {
+  const filePath = args[0];
+  if (!filePath) {
+    console.error('Usage: agentproofs audit <export.jsonl>');
+    process.exitCode = 1;
+    return;
+  }
+
+  const keyDir = join(config.dataDir, 'keys');
+  const keyPair = await loadOrCreateKeyPair(keyDir);
+  const keys = new Map([[keyPair.keyId, keyPair.publicKey]]);
+
+  const resolved = resolve(filePath);
+  const report = await auditChain(resolved, keys, keyPair);
+
+  if (report.chain_valid) {
+    console.log(green('\u2713') + ` Audit PASSED: ${bold(String(report.total_proofs))} proofs verified`);
+  } else {
+    console.log(red('\u2717') + ` Audit FAILED`);
+  }
+
+  console.log(`  Chain valid:       ${report.chain_valid ? green('yes') : red('no')}`);
+  console.log(`  Signatures valid:  ${report.signatures_valid ? green('yes') : red('no')}`);
+  console.log(`  Timestamps mono:   ${report.timestamps_monotonic ? green('yes') : red('no')}`);
+  console.log(`  Sequences mono:    ${report.sequences_monotonic ? green('yes') : red('no')}`);
+  console.log(`  First proof:       ${report.first_proof_time}`);
+  console.log(`  Last proof:        ${report.last_proof_time}`);
+  console.log(`  Verified at:       ${report.verified_at}`);
+
+  if (report.errors.length > 0) {
+    console.log('');
+    console.log(bold(`  Errors (${report.errors.length}):`));
+    for (const err of report.errors) {
+      console.log(`    ${red('seq ' + String(err.sequence))} [${err.type}] ${err.message}`);
+    }
+  }
+
+  console.log(`  Verifier sig:      ${dim(report.verifier_signature.slice(0, 32))}...`);
+
+  if (!report.chain_valid) {
+    process.exitCode = 1;
+  }
+}
+
+async function cmdComplianceReport(config: AgentproofsConfig, args: string[]): Promise<void> {
+  let format: 'json' | 'markdown' = 'json';
+  let outputPath: string | undefined;
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    const next = args[i + 1];
+    if (arg === '--format' && next) {
+      format = next as 'json' | 'markdown';
+      i++;
+    } else if (arg === '--output' && next) {
+      outputPath = next;
+      i++;
+    }
+  }
+
+  const report = await generateComplianceReport(config);
+
+  const output = format === 'markdown'
+    ? formatReportAsMarkdown(report)
+    : JSON.stringify(report, null, 2);
+
+  if (outputPath) {
+    await writeFile(resolve(outputPath), output, 'utf-8');
+    console.log(green('\u2713') + ` Compliance report written to ${outputPath}`);
+    console.log(`  Format: ${format}`);
+    console.log(`  Proofs analyzed: ${report.system_overview.total_proofs}`);
+    console.log(`  Chain valid: ${report.verification_status.chain_integrity_valid ? green('yes') : red('no')}`);
+  } else {
+    console.log(output);
+  }
+}
+
 function printHelp(): void {
   console.log(`
 ${bold('agentproofs')} — Signed, hash-chained proof logs for AI agent actions
@@ -444,6 +523,7 @@ ${bold('COMMANDS')}
   ${bold('init')}               Initialize data directory and keys
   ${bold('install-hooks')}      Install Claude Code auto-capture hooks
   ${bold('verify')}             Verify chain integrity
+  ${bold('audit')} <file>        Audit a JSONL chain export (stateless)
   ${bold('stats')}              Show chain statistics
   ${bold('tail')}               Show latest proofs
   ${bold('query')}              Search proofs
@@ -453,6 +533,11 @@ ${bold('COMMANDS')}
   ${bold('keys')}               List all keys
   ${bold('segments')}           List chain segments
   ${bold('sync')}               Sync chain to agentproofs.io
+  ${bold('compliance-report')}  Generate EU AI Act Article 12 compliance report
+
+${bold('COMPLIANCE REPORT OPTIONS')}
+  --format <fmt>       json or markdown (default: json)
+  --output <file>      Write to file instead of stdout
 
 ${bold('VERIFY OPTIONS')}
   --from <seq>         Start verification from sequence
@@ -524,6 +609,9 @@ export async function cli(argv: string[]): Promise<void> {
     case 'verify':
       await cmdVerify(config, args);
       break;
+    case 'audit':
+      await cmdAudit(config, args);
+      break;
     case 'stats':
       await cmdStats(config);
       break;
@@ -550,6 +638,9 @@ export async function cli(argv: string[]): Promise<void> {
       break;
     case 'sync':
       await cmdSync(config, args);
+      break;
+    case 'compliance-report':
+      await cmdComplianceReport(config, args);
       break;
     default:
       console.error(`Unknown command: ${command}`);

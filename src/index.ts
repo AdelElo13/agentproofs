@@ -37,4 +37,8 @@ export { rotateKey, listKeys, loadKeyById, loadAllPublicKeys } from './keys.ts';
 export { sealSegment, loadManifest, listSegments, shouldSealSegment } from './segments.ts';
 export { applyRetention } from './retention.ts';
 export { detectOrphans, findOrphanedStarts } from './recovery.ts';
+export { generateComplianceReport, formatReportAsMarkdown } from './compliance.ts';
+export type { ComplianceReport } from './compliance.ts';
+export { auditChain } from './verifier.ts';
+export type { AuditReport, AuditError } from './verifier.ts';
 export type * from './types.ts';
