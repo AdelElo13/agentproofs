@@ -52,4 +52,5 @@ export {
   loadAnchor,
 } from './anchor.ts';
 export type { Checkpoint, AnchorRecord, RekorEntryVerification } from './anchor.ts';
+export { createDashboardServer, startDashboardServer } from './dashboard-server.ts';
 export type * from './types.ts';

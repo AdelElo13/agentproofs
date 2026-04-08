@@ -1,6 +1,6 @@
 {
   "name": "agentproofs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Signed, hash-chained proof logs for AI agent tool executions and auditable events. MCP-native. Local-first.",
   "type": "module",
   "main": "dist/index.js",
@@ -11,6 +11,7 @@
   "files": [
     "dist",
     "bin",
+    "dashboard",
     "templates",
     "README.md",
     "LICENSE"
@@ -26,7 +27,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "dashboard": "tsx src/dashboard-server.ts"
   },
   "keywords": [
     "ai",

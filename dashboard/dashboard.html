@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentProofs Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a26;--bg4:#22222e;
+  --border:#2a2a3a;--text:#e0e0e8;--text2:#9090a0;--text3:#606070;
+  --accent:#6c63ff;--accent2:#8b83ff;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.12);
+  --yellow:#eab308;--yellow-bg:rgba(234,179,8,.12);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.12);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,.12);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,.12);
+  --orange:#f97316;--orange-bg:rgba(249,115,22,.12);
+  --radius:8px;--radius-sm:4px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+}
+html{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+body{min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+button{font-family:var(--font);cursor:pointer;border:none;border-radius:var(--radius-sm);font-size:13px;padding:8px 16px;transition:all .15s}
+input,select{font-family:var(--font);background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:13px;outline:none;transition:border .15s}
+input:focus,select:focus{border-color:var(--accent)}
+
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg4);border-color:var(--text3)}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* Layout */
+.app{display:flex;flex-direction:column;height:100vh}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+header h1{font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
+header h1 .logo{color:var(--accent);font-weight:700}
+header .status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+header .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}
+header .status-dot.offline{background:var(--red)}
+
+nav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;gap:0;flex-shrink:0;padding:0 16px}
+nav button{background:none;color:var(--text2);padding:10px 20px;border-radius:0;border-bottom:2px solid transparent;font-size:13px;font-weight:500}
+nav button:hover{color:var(--text);background:var(--bg3)}
+nav button.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+main{flex:1;overflow-y:auto;padding:20px 24px}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-header h2{font-size:15px;font-weight:600}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:8px 12px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:var(--bg3)}
+tbody tr.clickable{cursor:pointer}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;white-space:nowrap}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow)}
+.badge-blue{background:var(--blue-bg);color:var(--blue)}
+.badge-cyan{background:var(--cyan-bg);color:var(--cyan)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-orange{background:var(--orange-bg);color:var(--orange)}
+.badge-gray{background:rgba(144,144,160,.12);color:var(--text2)}
+
+/* Indicators */
+.valid{color:var(--green)}
+.invalid{color:var(--red)}
+.mono{font-family:var(--mono);font-size:12px}
+.hash{font-family:var(--mono);font-size:11px;color:var(--text3);word-break:break-all}
+.truncate{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--bg3);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-card .value{font-size:28px;font-weight:700;line-height:1.2}
+.stat-card .label{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* Filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filters label{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.filters input,.filters select{width:auto}
+
+/* Progress bar */
+.progress-wrap{background:var(--bg);border-radius:4px;height:8px;overflow:hidden;margin:8px 0}
+.progress-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .3s ease}
+
+/* Detail panel */
+.detail-panel{position:fixed;right:0;top:0;width:520px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:100;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;padding:20px}
+.detail-panel.open{transform:translateX(0)}
+.detail-panel .close-btn{position:absolute;top:12px;right:16px;background:none;color:var(--text2);font-size:20px;padding:4px 8px}
+.detail-panel .close-btn:hover{color:var(--text)}
+.detail-panel h3{font-size:16px;font-weight:600;margin-bottom:16px}
+.detail-panel .field{margin-bottom:12px}
+.detail-panel .field .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.detail-panel .field .val{font-family:var(--mono);font-size:13px;word-break:break-all}
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;display:none}
+.detail-overlay.open{display:block}
+
+/* Compliance report */
+.report-content{font-size:13px;line-height:1.7}
+.report-content h1{font-size:18px;margin:16px 0 8px}
+.report-content h2{font-size:15px;margin:12px 0 6px;color:var(--accent)}
+.report-content table{margin:8px 0 16px}
+.report-content pre{background:var(--bg);padding:12px;border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;white-space:pre-wrap}
+.report-content blockquote{border-left:3px solid var(--accent);padding-left:12px;color:var(--text2);margin:8px 0}
+
+/* Tab toggles */
+.toggle-group{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.toggle-group button{border-radius:0;border:none;padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--text2)}
+.toggle-group button.active{background:var(--accent);color:#fff}
+
+/* Empty state */
+.empty{text-align:center;padding:40px;color:var(--text3)}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Print styles */
+@media print{
+  header,nav,.filters,.btn-primary,.btn-secondary,.detail-panel,.detail-overlay{display:none!important}
+  main{padding:0}
+  .card{border:1px solid #ccc;break-inside:avoid}
+  *{color:#000!important;background:#fff!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1><span class="logo">AgentProofs</span> Dashboard</h1>
+    <div class="status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </header>
+  <nav id="nav">
+    <button class="active" data-tab="proofs">Proof Browser</button>
+    <button data-tab="verify">Chain Verification</button>
+    <button data-tab="compliance">Compliance Report</button>
+    <button data-tab="anchors">Anchor Status</button>
+    <button data-tab="keys">Key Info</button>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<div class="detail-overlay" id="detailOverlay"></div>
+<div class="detail-panel" id="detailPanel">
+  <button class="close-btn" id="detailClose">&times;</button>
+  <div id="detailContent"></div>
+</div>
+
+<script>
+(function() {
+'use strict';
+
+// -- Safe DOM helpers --
+function esc(s) {
+  if (s == null) return '';
+  var d = document.createElement('span');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function setText(el, text) {
+  if (typeof el === 'string') el = document.getElementById(el);
+  if (el) el.textContent = text;
+}
+
+// -- State --
+var currentTab = 'proofs';
+var proofData = { results: [], total: 0, has_more: false };
+var proofFilters = { limit: 50, offset: 0, event_type: '', agent: '', from_date: '', to_date: '', search: '' };
+var complianceReport = null;
+var complianceView = 'markdown';
+
+// -- API --
+async function api(path) {
+  var res = await fetch(path);
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  return res.json();
+}
+
+async function apiPost(path) {
+  var res = await fetch(path, { method: 'POST' });
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  return res.json();
+}
+
+async function checkConnection() {
+  try {
+    await api('/api/keys');
+    document.getElementById('statusDot').classList.remove('offline');
+    setText('statusText', 'Connected');
+    return true;
+  } catch(e) {
+    document.getElementById('statusDot').classList.add('offline');
+    setText('statusText', 'Disconnected');
+    return false;
+  }
+}
+
+// -- Badge builders (return safe HTML) --
+var eventColors = {
+  tool_started:'blue', tool_completed:'green', tool_failed:'red', tool_denied:'orange',
+  session_started:'cyan', session_ended:'cyan',
+  decision:'purple', delegation_started:'purple', delegation_completed:'purple',
+  approval_requested:'yellow', approval_granted:'green', approval_denied:'red',
+  policy_violation:'red', checkpoint_created:'blue', key_rotated:'yellow',
+  daemon_started:'gray', daemon_stopped:'gray', error:'red'
+};
+
+function eventBadge(type) {
+  var color = eventColors[type] || 'gray';
+  return '<span class="badge badge-' + color + '">' + esc(type) + '</span>';
+}
+
+function statusBadge(success) {
+  return success
+    ? '<span class="badge badge-green">OK</span>'
+    : '<span class="badge badge-red">FAIL</span>';
+}
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  return ts.replace('T', ' ').replace(/\.\d+Z$/, 'Z').replace('Z', '');
+}
+
+function truncHash(h, n) {
+  if (!h) return '';
+  return h.length > n ? h.slice(0, n) + '...' : h;
+}
+
+// -- Tab Navigation --
+document.getElementById('nav').addEventListener('click', function(e) {
+  if (e.target.tagName !== 'BUTTON') return;
+  var tab = e.target.dataset.tab;
+  if (!tab) return;
+  currentTab = tab;
+  document.querySelectorAll('#nav button').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  renderTab();
+});
+
+// -- Detail Panel --
+function openDetail(proof) {
+  var p = document.getElementById('detailPanel');
+  var o = document.getElementById('detailOverlay');
+  var content = document.getElementById('detailContent');
+  // Build detail using safe DOM
+  content.textContent = '';
+  var h3 = document.createElement('h3');
+  h3.textContent = 'Proof Detail';
+  content.appendChild(h3);
+
+  var fields = [
+    ['Proof ID', proof.id], ['Sequence', proof.sequence], ['Timestamp', fmtTime(proof.timestamp)],
+    ['Event Type', proof.event_type], ['Agent ID', proof.agent_id], ['Session ID', proof.session_id],
+    ['Chain ID', proof.chain_id], ['Key ID', proof.key_id],
+    ['Hash Algorithm', proof.hash_algorithm], ['Signature Algorithm', proof.signature_algorithm],
+    ['Hash', proof.hash], ['Prev Hash', proof.prev_hash], ['Signature', proof.signature],
+    ['Tool', (proof.action||{}).tool || ''], ['Success', (proof.action||{}).success ? 'Yes' : 'No'],
+    ['Input Hash', (proof.action||{}).input_hash], ['Output Hash', (proof.action||{}).output_hash],
+    ['Input Summary', (proof.action||{}).input_summary || ''],
+    ['Output Summary', (proof.action||{}).output_summary || ''],
+    ['Duration', (proof.action||{}).duration_ms != null ? proof.action.duration_ms + 'ms' : ''],
+    ['Error', (proof.action||{}).error_message || ''],
+    ['Origin', (proof.context||{}).origin], ['Working Dir', (proof.context||{}).working_dir || ''],
+    ['Namespace', (proof.context||{}).namespace || ''], ['Reason', (proof.context||{}).reason || ''],
+    ['Tags', ((proof.context||{}).tags || []).join(', ')],
+    ['Trace ID', proof.trace_id || ''], ['Span ID', proof.span_id || '']
+  ];
+
+  for (var i = 0; i < fields.length; i++) {
+    var lbl = fields[i][0], val = fields[i][1];
+    if (val === '' || val == null) continue;
+    var div = document.createElement('div');
+    div.className = 'field';
+    var lblEl = document.createElement('div');
+    lblEl.className = 'lbl';
+    lblEl.textContent = lbl;
+    var valEl = document.createElement('div');
+    valEl.className = 'val';
+    valEl.textContent = String(val);
+    div.appendChild(lblEl);
+    div.appendChild(valEl);
+    content.appendChild(div);
+  }
+
+  p.classList.add('open');
+  o.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+
+document.getElementById('detailClose').addEventListener('click', closeDetail);
+document.getElementById('detailOverlay').addEventListener('click', closeDetail);
+
+// -- Tab Renderers --
+async function renderTab() {
+  var m = document.getElementById('main');
+  switch (currentTab) {
+    case 'proofs': return renderProofs(m);
+    case 'verify': return renderVerify(m);
+    case 'compliance': return renderCompliance(m);
+    case 'anchors': return renderAnchors(m);
+    case 'keys': return renderKeys(m);
+  }
+}
+
+// ========== PROOFS TAB ==========
+async function renderProofs(m) {
+  // Build filters and table container using DOM
+  m.textContent = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+
+  var header = document.createElement('div');
+  header.className = 'card-header';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'Proof Browser';
+  var refreshBtn = document.createElement('button');
+  refreshBtn.className = 'btn-secondary btn-sm';
+  refreshBtn.textContent = 'Refresh';
+  refreshBtn.addEventListener('click', loadProofs);
+  header.appendChild(h2);
+  header.appendChild(refreshBtn);
+  card.appendChild(header);
+
+  // Filters row
+  var filtersDiv = document.createElement('div');
+  filtersDiv.className = 'filters';
+  filtersDiv.id = 'proofFilters';
+
+  // Type select
+  var typeLabel = document.createElement('label');
+  typeLabel.textContent = 'Type ';
+  var typeSelect = document.createElement('select');
+  typeSelect.id = 'filterType';
+  var types = ['','tool_started','tool_completed','tool_failed','tool_denied','session_started','session_ended',
+    'decision','delegation_started','delegation_completed','approval_requested','approval_granted','approval_denied',
+    'policy_violation','checkpoint_created','key_rotated','daemon_started','daemon_stopped','error'];
+  var typeLabels = ['All','tool_started','tool_completed','tool_failed','tool_denied','session_started','session_ended',
+    'decision','delegation_started','delegation_completed','approval_requested','approval_granted','approval_denied',
+    'policy_violation','checkpoint_created','key_rotated','daemon_started','daemon_stopped','error'];
+  for (var i = 0; i < types.length; i++) {
+    var opt = document.createElement('option');
+    opt.value = types[i];
+    opt.textContent = typeLabels[i];
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.addEventListener('change', applyProofFilter);
+  typeLabel.appendChild(typeSelect);
+  filtersDiv.appendChild(typeLabel);
+
+  // Agent input
+  var agentLabel = document.createElement('label');
+  agentLabel.textContent = 'Agent ';
+  var agentInput = document.createElement('input');
+  agentInput.type = 'text'; agentInput.id = 'filterAgent'; agentInput.placeholder = 'agent id'; agentInput.size = 12;
+  agentInput.addEventListener('change', applyProofFilter);
+  agentLabel.appendChild(agentInput);
+  filtersDiv.appendChild(agentLabel);
+
+  // From date
+  var fromLabel = document.createElement('label');
+  fromLabel.textContent = 'From ';
+  var fromInput = document.createElement('input');
+  fromInput.type = 'date'; fromInput.id = 'filterFrom';
+  fromInput.addEventListener('change', applyProofFilter);
+  fromLabel.appendChild(fromInput);
+  filtersDiv.appendChild(fromLabel);
+
+  // To date
+  var toLabel = document.createElement('label');
+  toLabel.textContent = 'To ';
+  var toInput = document.createElement('input');
+  toInput.type = 'date'; toInput.id = 'filterTo';
+  toInput.addEventListener('change', applyProofFilter);
+  toLabel.appendChild(toInput);
+  filtersDiv.appendChild(toLabel);
+
+  // Search
+  var searchLabel = document.createElement('label');
+  searchLabel.textContent = 'Search ';
+  var searchInput = document.createElement('input');
+  searchInput.type = 'text'; searchInput.id = 'filterSearch'; searchInput.placeholder = 'tool or hash...'; searchInput.size = 16;
+  searchInput.addEventListener('input', applyProofFilter);
+  searchLabel.appendChild(searchInput);
+  filtersDiv.appendChild(searchLabel);
+
+  card.appendChild(filtersDiv);
+
+  var tableDiv = document.createElement('div');
+  tableDiv.id = 'proofTable';
+  card.appendChild(tableDiv);
+
+  var paginationDiv = document.createElement('div');
+  paginationDiv.id = 'proofPagination';
+  paginationDiv.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between';
+  card.appendChild(paginationDiv);
+
+  m.appendChild(card);
+  await loadProofs();
+}
+
+function applyProofFilter() {
+  proofFilters.event_type = document.getElementById('filterType').value;
+  proofFilters.agent = document.getElementById('filterAgent').value;
+  proofFilters.from_date = document.getElementById('filterFrom').value;
+  proofFilters.to_date = document.getElementById('filterTo').value;
+  proofFilters.search = document.getElementById('filterSearch').value;
+  proofFilters.offset = 0;
+  loadProofs();
+}
+
+async function loadProofs() {
+  var t = document.getElementById('proofTable');
+  if (!t) return;
+  t.textContent = '';
+  var loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'padding:20px;text-align:center';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  loadingDiv.appendChild(sp);
+  loadingDiv.appendChild(document.createTextNode(' Loading...'));
+  t.appendChild(loadingDiv);
+
+  try {
+    var url = '/api/proofs?limit=' + proofFilters.limit + '&offset=' + proofFilters.offset;
+    if (proofFilters.event_type) url += '&type=' + proofFilters.event_type;
+    if (proofFilters.agent) url += '&agent=' + encodeURIComponent(proofFilters.agent);
+    if (proofFilters.from_date) url += '&from_date=' + proofFilters.from_date;
+    if (proofFilters.to_date) url += '&to_date=' + proofFilters.to_date;
+    if (proofFilters.search) url += '&search=' + encodeURIComponent(proofFilters.search);
+
+    proofData = await api(url);
+    renderProofTable();
+  } catch(e) {
+    t.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.className = 'empty';
+    errDiv.textContent = 'Failed to load proofs: ' + e.message;
+    t.appendChild(errDiv);
+  }
+}
+
+function renderProofTable() {
+  var t = document.getElementById('proofTable');
+  if (!t) return;
+
+  var results = proofData.results || [];
+
+  // Client-side search filter for tool name and content hash
+  if (proofFilters.search) {
+    var q = proofFilters.search.toLowerCase();
+    results = results.filter(function(p) {
+      return ((p.action||{}).tool || '').toLowerCase().indexOf(q) >= 0 ||
+        (p.hash || '').toLowerCase().indexOf(q) >= 0 ||
+        ((p.action||{}).input_hash || '').toLowerCase().indexOf(q) >= 0 ||
+        ((p.action||{}).output_hash || '').toLowerCase().indexOf(q) >= 0;
+    });
+  }
+
+  if (results.length === 0) {
+    t.textContent = '';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty';
+    emptyDiv.textContent = 'No proofs found';
+    t.appendChild(emptyDiv);
+    document.getElementById('proofPagination').textContent = '';
+    return;
+  }
+
+  // Build table - event badges use pre-escaped content from esc()
+  var tableHtml = '<table><thead><tr>' +
+    '<th>Seq</th><th>Timestamp</th><th>Event Type</th><th>Agent</th><th>Tool</th><th>Status</th><th>Hash</th>' +
+    '</tr></thead><tbody>';
+
+  for (var i = 0; i < results.length; i++) {
+    var p = results[i];
+    tableHtml += '<tr class="clickable" data-idx="' + i + '">' +
+      '<td class="mono">' + esc(p.sequence) + '</td>' +
+      '<td>' + esc(fmtTime(p.timestamp)) + '</td>' +
+      '<td>' + eventBadge(p.event_type) + '</td>' +
+      '<td class="truncate">' + esc(p.agent_id) + '</td>' +
+      '<td class="mono">' + esc((p.action||{}).tool || '') + '</td>' +
+      '<td>' + statusBadge((p.action||{}).success) + '</td>' +
+      '<td class="hash">' + esc(truncHash(p.hash, 16)) + '</td>' +
+      '</tr>';
+  }
+  tableHtml += '</tbody></table>';
+  t.innerHTML = tableHtml;
+
+  // Click handler - uses index, not user data in selectors
+  var filteredResults = results;
+  t.querySelectorAll('tr.clickable').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var idx = parseInt(row.dataset.idx, 10);
+      if (filteredResults[idx]) openDetail(filteredResults[idx]);
+    });
+  });
+
+  // Pagination
+  var pg = document.getElementById('proofPagination');
+  pg.textContent = '';
+  var showing = Math.min(proofFilters.offset + proofFilters.limit, proofData.total);
+  var info = document.createElement('span');
+  info.style.cssText = 'color:var(--text2);font-size:12px';
+  info.textContent = 'Showing ' + (proofFilters.offset + 1) + '-' + showing + ' of ' + proofData.total;
+  pg.appendChild(info);
+
+  var btnGroup = document.createElement('div');
+  btnGroup.style.cssText = 'display:flex;gap:6px';
+  var prevBtn = document.createElement('button');
+  prevBtn.className = 'btn-secondary btn-sm';
+  prevBtn.textContent = 'Prev';
+  prevBtn.disabled = proofFilters.offset === 0;
+  prevBtn.addEventListener('click', function() { proofPage(-1); });
+  var nextBtn = document.createElement('button');
+  nextBtn.className = 'btn-secondary btn-sm';
+  nextBtn.textContent = 'Next';
+  nextBtn.disabled = !proofData.has_more;
+  nextBtn.addEventListener('click', function() { proofPage(1); });
+  btnGroup.appendChild(prevBtn);
+  btnGroup.appendChild(nextBtn);
+  pg.appendChild(btnGroup);
+}
+
+function proofPage(dir) {
+  proofFilters.offset += dir * proofFilters.limit;
+  if (proofFilters.offset < 0) proofFilters.offset = 0;
+  loadProofs();
+}
+
+// ========== VERIFY TAB ==========
+async function renderVerify(m) {
+  m.textContent = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+
+  var header = document.createElement('div');
+  header.className = 'card-header';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'Chain Verification';
+  var verifyBtn = document.createElement('button');
+  verifyBtn.className = 'btn-primary';
+  verifyBtn.id = 'verifyBtn';
+  verifyBtn.textContent = 'Verify Chain';
+  verifyBtn.addEventListener('click', runVerify);
+  header.appendChild(h2);
+  header.appendChild(verifyBtn);
+  card.appendChild(header);
+
+  var resultDiv = document.createElement('div');
+  resultDiv.id = 'verifyResult';
+  var emptyDiv = document.createElement('div');
+  emptyDiv.className = 'empty';
+  emptyDiv.textContent = 'Click "Verify Chain" to check integrity';
+  resultDiv.appendChild(emptyDiv);
+  card.appendChild(resultDiv);
+
+  m.appendChild(card);
+}
+
+async function runVerify() {
+  var btn = document.getElementById('verifyBtn');
+  var r = document.getElementById('verifyResult');
+  btn.disabled = true;
+  btn.textContent = '';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  btn.appendChild(sp);
+  btn.appendChild(document.createTextNode(' Verifying...'));
+
+  r.textContent = '';
+  var progressWrap = document.createElement('div');
+  progressWrap.className = 'progress-wrap';
+  var progressBar = document.createElement('div');
+  progressBar.className = 'progress-bar';
+  progressBar.id = 'verifyProgress';
+  progressBar.style.width = '10%';
+  progressWrap.appendChild(progressBar);
+  r.appendChild(progressWrap);
+  var statusDiv = document.createElement('div');
+  statusDiv.style.cssText = 'text-align:center;color:var(--text2);font-size:12px';
+  statusDiv.textContent = 'Reading chain entries...';
+  r.appendChild(statusDiv);
+
+  var pct = 10;
+  var interval = setInterval(function() {
+    pct = Math.min(pct + Math.random() * 15, 90);
+    var bar = document.getElementById('verifyProgress');
+    if (bar) bar.style.width = pct + '%';
+  }, 300);
+
+  try {
+    var data = await api('/api/verify');
+    clearInterval(interval);
+    var bar = document.getElementById('verifyProgress');
+    if (bar) bar.style.width = '100%';
+
+    setTimeout(function() {
+      r.textContent = '';
+      renderVerifyResult(r, data);
+      btn.disabled = false;
+      btn.textContent = 'Verify Chain';
+    }, 400);
+  } catch(e) {
+    clearInterval(interval);
+    r.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.className = 'empty';
+    errDiv.textContent = 'Verification failed: ' + e.message;
+    r.appendChild(errDiv);
+    btn.disabled = false;
+    btn.textContent = 'Verify Chain';
+  }
+}
+
+function renderVerifyResult(container, d) {
+  var isValid = d.valid;
+  var stats = [
+    { value: String(d.total_proofs), label: 'Total Proofs', cls: '' },
+    { value: isValid ? 'VALID' : 'INVALID', label: 'Chain Integrity', cls: isValid ? 'valid' : 'invalid' },
+    { value: isValid ? 'VALID' : 'INVALID', label: 'Signatures', cls: isValid ? 'valid' : 'invalid' },
+    { value: String(d.verified), label: 'Verified', cls: 'valid' },
+    { value: String(d.key_transitions), label: 'Key Transitions', cls: '' },
+    { value: String(d.checkpoint_status), label: 'Checkpoint Status', cls: '' }
+  ];
+
+  var grid = document.createElement('div');
+  grid.className = 'stat-grid';
+  for (var i = 0; i < stats.length; i++) {
+    var card = document.createElement('div');
+    card.className = 'stat-card';
+    var val = document.createElement('div');
+    val.className = 'value' + (stats[i].cls ? ' ' + stats[i].cls : '');
+    val.textContent = stats[i].value;
+    var lbl = document.createElement('div');
+    lbl.className = 'label';
+    lbl.textContent = stats[i].label;
+    card.appendChild(val);
+    card.appendChild(lbl);
+    grid.appendChild(card);
+  }
+  container.appendChild(grid);
+
+  if (!isValid) {
+    var errCard = document.createElement('div');
+    errCard.className = 'card';
+    errCard.style.borderColor = 'var(--red)';
+    errCard.style.marginTop = '12px';
+    var errH3 = document.createElement('h3');
+    errH3.style.color = 'var(--red)';
+    errH3.textContent = 'Errors Found';
+    errCard.appendChild(errH3);
+    var p1 = document.createElement('p');
+    p1.style.marginTop = '8px';
+    p1.textContent = 'First invalid at sequence: ' + d.first_invalid_sequence;
+    errCard.appendChild(p1);
+    var p2 = document.createElement('p');
+    p2.textContent = 'Reason: ' + (d.first_invalid_reason || '');
+    errCard.appendChild(p2);
+    container.appendChild(errCard);
+  }
+
+  if (d.chain_hash) {
+    var hashDiv = document.createElement('div');
+    hashDiv.style.cssText = 'margin-top:12px;font-size:12px;color:var(--text2)';
+    hashDiv.textContent = 'Chain hash: ' + d.chain_hash;
+    container.appendChild(hashDiv);
+  }
+}
+
+// ========== COMPLIANCE TAB ==========
+async function renderCompliance(m) {
+  m.textContent = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+
+  var header = document.createElement('div');
+  header.className = 'card-header';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'EU AI Act Compliance Report';
+
+  var controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:8px;align-items:center';
+
+  var toggleGroup = document.createElement('div');
+  toggleGroup.className = 'toggle-group';
+  toggleGroup.id = 'complianceToggle';
+  var mdBtn = document.createElement('button');
+  mdBtn.textContent = 'Markdown';
+  mdBtn.className = complianceView === 'markdown' ? 'active' : '';
+  mdBtn.addEventListener('click', function() { setComplianceView('markdown'); });
+  var jsonBtn = document.createElement('button');
+  jsonBtn.textContent = 'JSON';
+  jsonBtn.className = complianceView === 'json' ? 'active' : '';
+  jsonBtn.addEventListener('click', function() { setComplianceView('json'); });
+  toggleGroup.appendChild(mdBtn);
+  toggleGroup.appendChild(jsonBtn);
+
+  var genBtn = document.createElement('button');
+  genBtn.className = 'btn-primary';
+  genBtn.id = 'complianceBtn';
+  genBtn.textContent = 'Generate Report';
+  genBtn.addEventListener('click', generateReport);
+
+  var pdfBtn = document.createElement('button');
+  pdfBtn.className = 'btn-secondary btn-sm';
+  pdfBtn.textContent = 'Export PDF';
+  pdfBtn.addEventListener('click', exportPDF);
+
+  var dlBtn = document.createElement('button');
+  dlBtn.className = 'btn-secondary btn-sm';
+  dlBtn.textContent = 'Download JSON';
+  dlBtn.addEventListener('click', downloadJSON);
+
+  controls.appendChild(toggleGroup);
+  controls.appendChild(genBtn);
+  controls.appendChild(pdfBtn);
+  controls.appendChild(dlBtn);
+
+  header.appendChild(h2);
+  header.appendChild(controls);
+  card.appendChild(header);
+
+  var resultDiv = document.createElement('div');
+  resultDiv.id = 'complianceResult';
+  if (complianceReport) {
+    renderComplianceContent(resultDiv);
+  } else {
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty';
+    emptyDiv.textContent = 'Click "Generate Report" to create a compliance report';
+    resultDiv.appendChild(emptyDiv);
+  }
+  card.appendChild(resultDiv);
+  m.appendChild(card);
+}
+
+function setComplianceView(view) {
+  complianceView = view;
+  document.querySelectorAll('#complianceToggle button').forEach(function(b) {
+    b.classList.toggle('active', (view === 'markdown' && b.textContent === 'Markdown') || (view === 'json' && b.textContent === 'JSON'));
+  });
+  if (complianceReport) {
+    var el = document.getElementById('complianceResult');
+    el.textContent = '';
+    renderComplianceContent(el);
+  }
+}
+
+async function generateReport() {
+  var btn = document.getElementById('complianceBtn');
+  var r = document.getElementById('complianceResult');
+  btn.disabled = true;
+  btn.textContent = '';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  btn.appendChild(sp);
+  btn.appendChild(document.createTextNode(' Generating...'));
+  r.textContent = '';
+  var loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'padding:20px;text-align:center';
+  var sp2 = document.createElement('span');
+  sp2.className = 'spinner';
+  loadingDiv.appendChild(sp2);
+  loadingDiv.appendChild(document.createTextNode(' Analyzing chain...'));
+  r.appendChild(loadingDiv);
+
+  try {
+    complianceReport = await api('/api/compliance');
+    r.textContent = '';
+    renderComplianceContent(r);
+  } catch(e) {
+    r.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.className = 'empty';
+    errDiv.textContent = 'Failed: ' + e.message;
+    r.appendChild(errDiv);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Generate Report';
+}
+
+function renderComplianceContent(container) {
+  if (!complianceReport) return;
+  if (complianceView === 'json') {
+    var pre = document.createElement('pre');
+    pre.className = 'report-content';
+    pre.style.cssText = 'max-height:70vh;overflow-y:auto';
+    pre.textContent = JSON.stringify(complianceReport, null, 2);
+    container.appendChild(pre);
+    return;
+  }
+  // Markdown view - uses a mix of safe DOM and pre-escaped badge HTML
+  var div = document.createElement('div');
+  div.className = 'report-content';
+  div.id = 'reportMarkdown';
+  div.innerHTML = buildMarkdownReport(complianceReport);
+  container.appendChild(div);
+}
+
+function buildMarkdownReport(r) {
+  var v = r.verification_status;
+  var d = r.data_retention;
+  var p = r.privacy_controls;
+  var k = r.key_management;
+  var a = r.audit_trail_coverage;
+  var ri = r.risk_indicators;
+
+  // All values pass through esc() for safety
+  var html = '<h1>EU AI Act Article 12 -- Compliance Report</h1>' +
+    '<p><strong>Framework:</strong> ' + esc(r.framework) + ' | <strong>Version:</strong> ' + esc(r.report_version) + ' | <strong>Generated:</strong> ' + esc(fmtTime(r.system_overview.report_generated_at)) + '</p>' +
+
+    '<h2>1. System Overview</h2>' +
+    '<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>' +
+    '<tr><td>Agent ID</td><td class="mono">' + esc(r.system_overview.agent_id) + '</td></tr>' +
+    '<tr><td>Public Key Fingerprint</td><td class="mono">' + esc(r.system_overview.public_key_fingerprint) + '</td></tr>' +
+    '<tr><td>Chain Created</td><td>' + esc(fmtTime(r.system_overview.chain_creation_date) || 'N/A') + '</td></tr>' +
+    '<tr><td>Total Proofs</td><td>' + esc(r.system_overview.total_proofs) + '</td></tr>' +
+    '</tbody></table>' +
+
+    '<h2>2. Event Summary</h2>' +
+    '<p>Total events: <strong>' + esc(r.event_summary.total_events) + '</strong></p>' +
+    '<table><thead><tr><th>Event Type</th><th>Count</th></tr></thead><tbody>';
+
+  var sortedEvents = Object.entries(r.event_summary.by_event_type).sort(function(a, b) { return b[1] - a[1]; });
+  for (var i = 0; i < sortedEvents.length; i++) {
+    html += '<tr><td>' + eventBadge(sortedEvents[i][0]) + '</td><td>' + esc(sortedEvents[i][1]) + '</td></tr>';
+  }
+
+  html += '</tbody></table>' +
+    '<h2>3. Verification Status</h2>' +
+    '<table><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody>' +
+    '<tr><td>Chain Integrity</td><td class="' + (v.chain_integrity_valid ? 'valid' : 'invalid') + '"><strong>' + (v.chain_integrity_valid ? 'PASS' : 'FAIL') + '</strong></td></tr>' +
+    '<tr><td>Proofs Verified</td><td>' + esc(v.total_verified) + '</td></tr>' +
+    '<tr><td>Signature Validity</td><td class="' + (v.signature_validity ? 'valid' : 'invalid') + '">' + (v.signature_validity ? 'Valid' : 'Invalid') + '</td></tr>' +
+    '<tr><td>Key Transitions</td><td>' + esc(v.key_transitions) + '</td></tr>' +
+    '<tr><td>Checkpoint Status</td><td>' + esc(v.checkpoint_status) + '</td></tr>' +
+    '</tbody></table>';
+
+  if (v.anomalies && v.anomalies.length > 0) {
+    html += '<p><strong>Anomalies:</strong></p><ul>';
+    for (var j = 0; j < v.anomalies.length; j++) html += '<li>' + esc(v.anomalies[j]) + '</li>';
+    html += '</ul>';
+  }
+
+  html += '<h2>4. Data Retention</h2>' +
+    '<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>' +
+    '<tr><td>Configured Retention</td><td>' + esc(d.configured_retention_days) + ' days</td></tr>' +
+    '<tr><td>Oldest Proof</td><td>' + esc(fmtTime(d.oldest_proof_date) || 'N/A') + '</td></tr>' +
+    '<tr><td>Newest Proof</td><td>' + esc(fmtTime(d.newest_proof_date) || 'N/A') + '</td></tr>' +
+    '<tr><td>Chain Span</td><td>' + esc(d.chain_span_days) + ' days</td></tr>' +
+    '<tr><td>Article 19 Compliant</td><td class="' + (d.article_19_compliant ? 'valid' : 'invalid') + '">' + (d.article_19_compliant ? 'Yes' : 'No') + '</td></tr>' +
+    '</tbody></table>' +
+    '<blockquote>' + esc(d.article_19_notes) + '</blockquote>' +
+
+    '<h2>5. Privacy Controls</h2>' +
+    '<p><strong>Redaction Level:</strong> ' + esc(p.configured_redaction_level) + ' -- ' + esc(p.redaction_level_description) + '</p>' +
+    '<p><strong>Data hashed:</strong></p><ul>';
+  for (var m = 0; m < p.data_hashed.length; m++) html += '<li>' + esc(p.data_hashed[m]) + '</li>';
+  html += '</ul><p><strong>Data stored in plaintext:</strong></p><ul>';
+  for (var n = 0; n < p.data_stored_plaintext.length; n++) html += '<li>' + esc(p.data_stored_plaintext[n]) + '</li>';
+
+  html += '</ul>' +
+    '<h2>6. Key Management</h2>' +
+    '<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>' +
+    '<tr><td>Algorithm</td><td>' + esc(k.key_algorithm) + '</td></tr>' +
+    '<tr><td>Current Key</td><td class="mono">' + esc(k.current_key_fingerprint) + '</td></tr>' +
+    '<tr><td>Total Keys</td><td>' + esc(k.total_keys) + '</td></tr>' +
+    '</tbody></table>';
+
+  if (k.rotation_history.length > 1) {
+    html += '<p><strong>Rotation History:</strong></p><ul>';
+    for (var o = 0; o < k.rotation_history.length; o++) {
+      html += '<li class="mono">' + esc(k.rotation_history[o].key_id) + ' ' + (k.rotation_history[o].is_current ? '(current)' : '(rotated)') + '</li>';
+    }
+    html += '</ul>';
+  }
+
+  html += '<h2>7. Audit Trail Coverage</h2>' +
+    '<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>' +
+    '<tr><td>Tool Starts</td><td>' + esc(a.total_tool_starts) + '</td></tr>' +
+    '<tr><td>Tool Completions</td><td>' + esc(a.total_tool_completions) + '</td></tr>' +
+    '<tr><td>Orphaned Starts</td><td>' + esc(a.orphaned_starts) + '</td></tr>' +
+    '<tr><td>Coverage</td><td>' + esc(a.coverage_percentage) + '%</td></tr>' +
+    '</tbody></table>' +
+
+    '<h2>8. Risk Indicators</h2>' +
+    '<table><thead><tr><th>Indicator</th><th>Count</th></tr></thead><tbody>' +
+    '<tr><td>Policy Violations</td><td>' + esc(ri.policy_violations) + '</td></tr>' +
+    '<tr><td>Failed Verifications</td><td>' + esc(ri.failed_verifications) + '</td></tr>' +
+    '<tr><td>Failed Actions</td><td>' + esc(ri.failed_actions) + '</td></tr>' +
+    '<tr><td>Tool Denials</td><td>' + esc(ri.tool_denials) + '</td></tr>' +
+    '<tr><td>Errors</td><td>' + esc(ri.errors) + '</td></tr>' +
+    '</tbody></table>';
+
+  if (ri.unusual_patterns && ri.unusual_patterns.length > 0) {
+    html += '<p><strong>Unusual Patterns:</strong></p><ul>';
+    for (var q = 0; q < ri.unusual_patterns.length; q++) html += '<li>' + esc(ri.unusual_patterns[q]) + '</li>';
+    html += '</ul>';
+  }
+
+  return html;
+}
+
+function exportPDF() {
+  if (!complianceReport) { alert('Generate a report first.'); return; }
+  if (complianceView !== 'markdown') setComplianceView('markdown');
+  setTimeout(function() { window.print(); }, 200);
+}
+
+function downloadJSON() {
+  if (!complianceReport) { alert('Generate a report first.'); return; }
+  var blob = new Blob([JSON.stringify(complianceReport, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'agentproofs-compliance-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ========== ANCHORS TAB ==========
+async function renderAnchors(m) {
+  m.textContent = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+
+  var header = document.createElement('div');
+  header.className = 'card-header';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'Rekor Anchors';
+
+  var controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:8px';
+  var refreshBtn = document.createElement('button');
+  refreshBtn.className = 'btn-secondary btn-sm';
+  refreshBtn.textContent = 'Refresh';
+  refreshBtn.addEventListener('click', loadAnchors);
+  var anchorBtn = document.createElement('button');
+  anchorBtn.className = 'btn-primary';
+  anchorBtn.id = 'anchorBtn';
+  anchorBtn.textContent = 'Create Anchor';
+  anchorBtn.addEventListener('click', createAnchor);
+  controls.appendChild(refreshBtn);
+  controls.appendChild(anchorBtn);
+
+  header.appendChild(h2);
+  header.appendChild(controls);
+  card.appendChild(header);
+
+  var listDiv = document.createElement('div');
+  listDiv.id = 'anchorList';
+  var loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'padding:20px;text-align:center';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  loadingDiv.appendChild(sp);
+  loadingDiv.appendChild(document.createTextNode(' Loading...'));
+  listDiv.appendChild(loadingDiv);
+  card.appendChild(listDiv);
+
+  m.appendChild(card);
+  await loadAnchors();
+}
+
+async function loadAnchors() {
+  var el = document.getElementById('anchorList');
+  if (!el) return;
+
+  try {
+    var data = await api('/api/anchors');
+    el.textContent = '';
+
+    if (!data.anchors || data.anchors.length === 0) {
+      var emptyDiv = document.createElement('div');
+      emptyDiv.className = 'empty';
+      emptyDiv.textContent = 'No anchors yet. Create one to anchor your chain to Sigstore Rekor.';
+      el.appendChild(emptyDiv);
+      return;
+    }
+
+    var tableHtml = '<table><thead><tr>' +
+      '<th>Checkpoint ID</th><th>Anchored At</th><th>Proofs</th><th>Merkle Root</th><th>Rekor UUID</th><th>Log Index</th><th>Trust</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < data.anchors.length; i++) {
+      var a = data.anchors[i];
+      var cp = a.checkpoint;
+      tableHtml += '<tr>' +
+        '<td class="mono">' + esc(cp.checkpoint_id) + '</td>' +
+        '<td>' + esc(fmtTime(a.anchored_at)) + '</td>' +
+        '<td>' + esc(cp.proof_count) + ' (' + esc(cp.first_sequence) + '..' + esc(cp.last_sequence) + ')</td>' +
+        '<td class="hash">' + esc(truncHash(cp.merkle_root, 20)) + '</td>' +
+        '<td class="mono" style="font-size:11px">' + esc(truncHash(a.rekor_entry_uuid, 20)) + '</td>' +
+        '<td>' + esc(a.rekor_log_index) + '</td>' +
+        '<td><span class="badge badge-green">L1</span></td>' +
+        '</tr>';
+    }
+    tableHtml += '</tbody></table>';
+    el.innerHTML = tableHtml;
+  } catch(e) {
+    el.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.className = 'empty';
+    errDiv.textContent = 'Failed: ' + e.message;
+    el.appendChild(errDiv);
+  }
+}
+
+async function createAnchor() {
+  var btn = document.getElementById('anchorBtn');
+  btn.disabled = true;
+  btn.textContent = '';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  btn.appendChild(sp);
+  btn.appendChild(document.createTextNode(' Anchoring...'));
+
+  try {
+    var result = await apiPost('/api/anchor');
+    await loadAnchors();
+    alert('Anchor created successfully! Rekor UUID: ' + result.rekor_entry_uuid);
+  } catch(e) {
+    alert('Anchor creation failed: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Create Anchor';
+}
+
+// ========== KEYS TAB ==========
+async function renderKeys(m) {
+  m.textContent = '';
+  var card = document.createElement('div');
+  card.className = 'card';
+
+  var header = document.createElement('div');
+  header.className = 'card-header';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'Key Information';
+  header.appendChild(h2);
+  card.appendChild(header);
+
+  var infoDiv = document.createElement('div');
+  infoDiv.id = 'keyInfo';
+  var loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'padding:20px;text-align:center';
+  var sp = document.createElement('span');
+  sp.className = 'spinner';
+  loadingDiv.appendChild(sp);
+  loadingDiv.appendChild(document.createTextNode(' Loading...'));
+  infoDiv.appendChild(loadingDiv);
+  card.appendChild(infoDiv);
+  m.appendChild(card);
+
+  try {
+    var data = await api('/api/keys');
+    infoDiv.textContent = '';
+
+    // Stat grid
+    var grid = document.createElement('div');
+    grid.className = 'stat-grid';
+
+    var keyCard = document.createElement('div');
+    keyCard.className = 'stat-card';
+    var kv = document.createElement('div');
+    kv.className = 'value mono';
+    kv.style.fontSize = '16px';
+    kv.textContent = data.current_key_id;
+    var kl = document.createElement('div');
+    kl.className = 'label';
+    kl.textContent = 'Current Key Fingerprint';
+    keyCard.appendChild(kv);
+    keyCard.appendChild(kl);
+    grid.appendChild(keyCard);
+
+    var totalCard = document.createElement('div');
+    totalCard.className = 'stat-card';
+    var tv = document.createElement('div');
+    tv.className = 'value';
+    tv.textContent = String(data.total_keys);
+    var tl = document.createElement('div');
+    tl.className = 'label';
+    tl.textContent = 'Total Keys';
+    totalCard.appendChild(tv);
+    totalCard.appendChild(tl);
+    grid.appendChild(totalCard);
+
+    var algoCard = document.createElement('div');
+    algoCard.className = 'stat-card';
+    var av = document.createElement('div');
+    av.className = 'value';
+    av.style.fontSize = '14px';
+    av.textContent = 'Ed25519 (EdDSA)';
+    var al = document.createElement('div');
+    al.className = 'label';
+    al.textContent = 'Algorithm';
+    algoCard.appendChild(av);
+    algoCard.appendChild(al);
+    grid.appendChild(algoCard);
+
+    infoDiv.appendChild(grid);
+
+    // Rotation history
+    var histH3 = document.createElement('h3');
+    histH3.style.cssText = 'margin:16px 0 8px;font-size:14px';
+    histH3.textContent = 'Key Rotation History';
+    infoDiv.appendChild(histH3);
+
+    var table = document.createElement('table');
+    var thead = document.createElement('thead');
+    var thr = document.createElement('tr');
+    var th1 = document.createElement('th');
+    th1.textContent = 'Key ID';
+    var th2 = document.createElement('th');
+    th2.textContent = 'Status';
+    thr.appendChild(th1);
+    thr.appendChild(th2);
+    thead.appendChild(thr);
+    table.appendChild(thead);
+
+    var tbody = document.createElement('tbody');
+    for (var i = 0; i < data.keys.length; i++) {
+      var key = data.keys[i];
+      var tr = document.createElement('tr');
+      var td1 = document.createElement('td');
+      td1.className = 'mono';
+      td1.textContent = key.keyId;
+      var td2 = document.createElement('td');
+      var badge = document.createElement('span');
+      badge.className = 'badge ' + (key.isCurrent ? 'badge-green' : 'badge-gray');
+      badge.textContent = key.isCurrent ? 'Current' : 'Rotated';
+      td2.appendChild(badge);
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    infoDiv.appendChild(table);
+  } catch(e) {
+    infoDiv.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.className = 'empty';
+    errDiv.textContent = 'Failed: ' + e.message;
+    infoDiv.appendChild(errDiv);
+  }
+}
+
+// -- Init --
+(async function() {
+  await checkConnection();
+  renderTab();
+  setInterval(checkConnection, 30000);
+})();
+
+})();
+</script>
+</body>
+</html>

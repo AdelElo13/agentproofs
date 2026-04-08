@@ -587,6 +587,16 @@ async function cmdAnchors(config: AgentproofsConfig, args: string[]): Promise<vo
   }
 }
 
+async function cmdDashboard(config: AgentproofsConfig, args: string[]): Promise<void> {
+  let port = 3300;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--port' && args[i + 1]) port = parseInt(args[++i], 10);
+  }
+
+  const { startDashboardServer } = await import('./dashboard-server.ts');
+  await startDashboardServer(port);
+}
+
 async function cmdComplianceReport(config: AgentproofsConfig, args: string[]): Promise<void> {
   let format: 'json' | 'markdown' = 'json';
   let outputPath: string | undefined;
@@ -645,12 +655,16 @@ ${bold('COMMANDS')}
   ${bold('anchors')}            List external anchors
   ${bold('sync')}               Sync chain to agentproofs.io
   ${bold('compliance-report')}  Generate EU AI Act Article 12 compliance report
+  ${bold('dashboard')}           Start web dashboard (default: port 3300)
 
 ${bold('ANCHOR OPTIONS')}
   --last <n>           Checkpoint last N proofs only (default: all)
 
 ${bold('ANCHORS OPTIONS')}
   --verify             Verify each anchor against Rekor
+
+${bold('DASHBOARD OPTIONS')}
+  --port <n>           Port number (default: 3300)
 
 ${bold('COMPLIANCE REPORT OPTIONS')}
   --format <fmt>       json or markdown (default: json)
@@ -766,6 +780,9 @@ export async function cli(argv: string[]): Promise<void> {
       break;
     case 'compliance-report':
       await cmdComplianceReport(config, args);
+      break;
+    case 'dashboard':
+      await cmdDashboard(config, args);
       break;
     default:
       console.error(`Unknown command: ${command}`);
