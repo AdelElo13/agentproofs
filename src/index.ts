@@ -41,4 +41,15 @@ export { generateComplianceReport, formatReportAsMarkdown } from './compliance.t
 export type { ComplianceReport } from './compliance.ts';
 export { auditChain } from './verifier.ts';
 export type { AuditReport, AuditError } from './verifier.ts';
+export {
+  createCheckpoint,
+  createCheckpointFromChain,
+  computeMerkleRoot,
+  submitToRekor,
+  verifyRekorEntry,
+  saveAnchor,
+  listAnchors,
+  loadAnchor,
+} from './anchor.ts';
+export type { Checkpoint, AnchorRecord, RekorEntryVerification } from './anchor.ts';
 export type * from './types.ts';

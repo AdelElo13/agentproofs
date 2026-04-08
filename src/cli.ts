@@ -17,6 +17,13 @@ import {
 } from './crypto.ts';
 import { getStats } from './resources.ts';
 import { generateComplianceReport, formatReportAsMarkdown } from './compliance.ts';
+import {
+  createCheckpointFromChain,
+  submitToRekor,
+  saveAnchor,
+  listAnchors,
+  verifyRekorEntry,
+} from './anchor.ts';
 import type { AgentproofsConfig, EventType, QueryParams } from './types.ts';
 import { EVENT_TYPES } from './types.ts';
 
@@ -478,6 +485,108 @@ async function cmdAudit(config: AgentproofsConfig, args: string[]): Promise<void
   }
 }
 
+async function cmdAnchor(config: AgentproofsConfig, args: string[]): Promise<void> {
+  let lastN: number | undefined;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--last' && args[i + 1]) lastN = parseInt(args[++i], 10);
+  }
+
+  const keyDir = join(config.dataDir, 'keys');
+  const keyPair = await loadOrCreateKeyPair(keyDir);
+
+  // Load chain ID
+  let chainId: string;
+  try {
+    chainId = (await readFile(join(config.dataDir, 'chain_id'), 'utf-8')).trim();
+  } catch {
+    console.error(red('\u2717') + ' No chain found. Run "npx agentproofs init" first.');
+    process.exitCode = 1;
+    return;
+  }
+
+  // Create checkpoint
+  console.log(dim('Creating checkpoint...'));
+  const checkpoint = await createCheckpointFromChain(config.dataDir, chainId, keyPair, lastN);
+  console.log(`  Merkle root: ${dim(checkpoint.merkle_root)}`);
+  console.log(`  Proofs: ${checkpoint.proof_count} (seq ${checkpoint.first_sequence}..${checkpoint.last_sequence})`);
+
+  // Submit to Rekor
+  console.log(dim('Submitting to Rekor transparency log...'));
+  try {
+    const anchor = await submitToRekor(checkpoint, keyPair);
+
+    // Save anchor record
+    const filePath = await saveAnchor(config.dataDir, anchor);
+
+    console.log(green('\u2713') + ' Anchored to Sigstore Rekor');
+    console.log(`  Entry UUID:  ${anchor.rekor_entry_uuid}`);
+    console.log(`  Log index:   ${anchor.rekor_log_index}`);
+    console.log(`  Trust level: L1 (public transparency log)`);
+    console.log(`  Saved to:    ${dim(filePath)}`);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(red('\u2717') + ` Rekor submission failed: ${msg}`);
+    process.exitCode = 1;
+  }
+}
+
+async function cmdAnchors(config: AgentproofsConfig, args: string[]): Promise<void> {
+  let doVerify = false;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--verify') doVerify = true;
+  }
+
+  const anchors = await listAnchors(config.dataDir);
+
+  if (anchors.length === 0) {
+    console.log(dim('No external anchors yet. Run "npx agentproofs anchor" to create one.'));
+    return;
+  }
+
+  console.log(bold(`External Anchors (${anchors.length})`));
+  console.log('');
+
+  for (const anchor of anchors) {
+    const ts = formatTimestamp(anchor.anchored_at);
+    console.log(
+      `  ${bold(anchor.checkpoint.checkpoint_id)} ${dim(ts)}`,
+    );
+    console.log(
+      `    Rekor UUID:   ${anchor.rekor_entry_uuid}`,
+    );
+    console.log(
+      `    Log index:    ${anchor.rekor_log_index}`,
+    );
+    console.log(
+      `    Merkle root:  ${dim(anchor.checkpoint.merkle_root)}`,
+    );
+    console.log(
+      `    Proofs:       ${anchor.checkpoint.proof_count} (seq ${anchor.checkpoint.first_sequence}..${anchor.checkpoint.last_sequence})`,
+    );
+
+    if (doVerify) {
+      try {
+        const verification = await verifyRekorEntry(
+          anchor.rekor_entry_uuid,
+          anchor.checkpoint.merkle_root,
+        );
+        if (verification.valid) {
+          console.log(`    Verification: ${green('\u2713 valid')}`);
+        } else {
+          console.log(`    Verification: ${red('\u2717 hash mismatch')}`);
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.log(`    Verification: ${red('\u2717 ' + msg)}`);
+      }
+    }
+
+    console.log('');
+  }
+}
+
 async function cmdComplianceReport(config: AgentproofsConfig, args: string[]): Promise<void> {
   let format: 'json' | 'markdown' = 'json';
   let outputPath: string | undefined;
@@ -532,8 +641,16 @@ ${bold('COMMANDS')}
   ${bold('pubkey')}             Print public key
   ${bold('keys')}               List all keys
   ${bold('segments')}           List chain segments
+  ${bold('anchor')}             Create checkpoint and anchor to Sigstore Rekor (L1 trust)
+  ${bold('anchors')}            List external anchors
   ${bold('sync')}               Sync chain to agentproofs.io
   ${bold('compliance-report')}  Generate EU AI Act Article 12 compliance report
+
+${bold('ANCHOR OPTIONS')}
+  --last <n>           Checkpoint last N proofs only (default: all)
+
+${bold('ANCHORS OPTIONS')}
+  --verify             Verify each anchor against Rekor
 
 ${bold('COMPLIANCE REPORT OPTIONS')}
   --format <fmt>       json or markdown (default: json)
@@ -575,6 +692,8 @@ ${bold('EXAMPLES')}
   npx agentproofs query --tool Bash --from 2026-04-01
   npx agentproofs export --sign --format csv
   npx agentproofs pubkey
+  npx agentproofs anchor --last 100
+  npx agentproofs anchors --verify
 `);
 }
 
@@ -635,6 +754,12 @@ export async function cli(argv: string[]): Promise<void> {
       break;
     case 'segments':
       await cmdSegments(config);
+      break;
+    case 'anchor':
+      await cmdAnchor(config, args);
+      break;
+    case 'anchors':
+      await cmdAnchors(config, args);
       break;
     case 'sync':
       await cmdSync(config, args);

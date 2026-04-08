@@ -8,6 +8,12 @@ import { auditChain } from './verifier.ts';
 import { generateComplianceReport, formatReportAsMarkdown } from './compliance.ts';
 import { formatPublicKey } from './crypto.ts';
 import {
+  createCheckpointFromChain,
+  submitToRekor,
+  saveAnchor,
+  listAnchors,
+} from './anchor.ts';
+import {
   getChainStatus,
   getStats,
   getLatest,
@@ -206,6 +212,51 @@ export async function createMcpServer(config: AgentproofsConfig): Promise<{
 
       return {
         content: [{ type: 'text' as const, text: output }],
+      };
+    },
+  );
+
+  server.tool(
+    'proof_anchor',
+    'Create a checkpoint of the proof chain and anchor it to Sigstore Rekor transparency log (L1 trust)',
+    {
+      last_n: z.number().optional().describe('Checkpoint last N proofs only (default: all)'),
+    },
+    async (params) => {
+      const checkpoint = await createCheckpointFromChain(
+        config.dataDir,
+        daemon.chainId,
+        daemon.keyPair,
+        params.last_n,
+      );
+
+      const anchor = await submitToRekor(checkpoint, daemon.keyPair);
+      const filePath = await saveAnchor(config.dataDir, anchor);
+
+      return {
+        content: [{
+          type: 'text' as const,
+          text: JSON.stringify({
+            ...anchor,
+            file_path: filePath,
+          }, null, 2),
+        }],
+      };
+    },
+  );
+
+  server.tool(
+    'proof_anchors',
+    'List all external anchors (Rekor transparency log entries)',
+    {},
+    async () => {
+      const anchors = await listAnchors(config.dataDir);
+
+      return {
+        content: [{
+          type: 'text' as const,
+          text: JSON.stringify(anchors, null, 2),
+        }],
       };
     },
   );
