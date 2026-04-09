@@ -54,3 +54,6 @@ export {
 export type { Checkpoint, AnchorRecord, RekorEntryVerification } from './anchor.ts';
 export { createDashboardServer, startDashboardServer } from './dashboard-server.ts';
 export type * from './types.ts';
+
+// ── AgentTrace Module (observability + cost attribution) ──
+export * from './trace/index.ts';
