@@ -1,20 +1,54 @@
 # agentproofs
 
-Signed, hash-chained proof logs for AI agent tool executions and auditable events. MCP-native. Local-first.
+Trust, observability, and cost attribution for AI agents. Prove what your agents did — and whether it was worth it.
 
-## The problem
+## Two layers, one platform
+
+| Layer | Question | Module |
+|-------|----------|--------|
+| **Trust** | Did the agent do what it claimed? | Proof chain (Ed25519 signed, hash-linked) |
+| **Observability** | Was it worth the money? | AgentTrace (decision trees, cost attribution) |
+
+```
+Your agents spent $8.14. Here's what was worth it.
+
+  Effective spend:  $4.72 (58%)
+  Identified waste: $3.42 (42%)
+
+  [WARNING] Research Agent read 12 irrelevant files (-$0.89, 85% confidence)
+  > Action: Add "focus on src/auth/" to agent prompt. Saves ~$4.45/week.
+```
+
+Every action is also cryptographically signed and hash-chained. Modify, delete, or insert any record and the chain breaks.
+
+## Quick start
+
+```bash
+# Initialize (generates Ed25519 keypair + data directory)
+npx agentproofs init
+
+# Install auto-capture hooks for Claude Code
+npx agentproofs install-hooks
+
+# Use Claude Code normally — every tool call is captured and traced
+
+# See what happened (tamper-evident)
+npx agentproofs tail
+
+# Verify nothing was tampered with
+npx agentproofs verify
+
+# See where your tokens went
+npx agentproofs trace <session.jsonl> --project my-app
+```
+
+## Layer 1: Proof Chain (Trust)
 
 Your AI agent just modified 200 files, ran 50 shell commands, and made 12 architectural decisions. Your team lead asks: *"What exactly did the AI do?"*
 
 Without agentproofs: you scroll through terminal history and hope nothing got lost.
 
-With agentproofs: every action is cryptographically signed and hash-chained. Modify, delete, or insert any record and the chain breaks. You have a verifiable, tamper-evident audit trail.
-
-## How is this different from just logging?
-
-A log file is a text file. Anyone with write access can edit it, and you'd never know.
-
-agentproofs creates a **hash chain**: each proof contains the hash of the previous one. Change anything and every subsequent hash becomes invalid. On top of that, every entry is **signed with Ed25519** — so you can prove which agent created which proof.
+With agentproofs: every action is cryptographically signed and hash-chained.
 
 ```
 Proof 1: { event: "Bash: npm install", hash: a3f... }
@@ -26,124 +60,133 @@ Proof 3: { event: "Decision: use JWT", hash: e9b... }
 
 Tamper with Proof 2? Its hash changes. Proof 3's `prev_hash` no longer matches. Chain broken. Tampering detected.
 
-## Quick start
+### How is this different from just logging?
 
-```bash
-# Initialize (generates Ed25519 keypair + data directory)
-npx agentproofs init
+A log file is a text file. Anyone with write access can edit it, and you'd never know.
 
-# Install auto-capture hooks for Claude Code
-npx agentproofs install-hooks
+agentproofs creates a **hash chain**: each proof contains the hash of the previous one. Change anything and every subsequent hash becomes invalid. On top of that, every entry is **signed with Ed25519** — so you can prove which agent created which proof.
 
-# Use Claude Code normally — every tool call is captured automatically
+### What it looks like
 
-# See what happened
-npx agentproofs tail
-
-# Verify nothing was tampered with
-npx agentproofs verify
-```
-
-## What it looks like
-
-**`npx agentproofs tail`** — see every action your agent took:
-
+**`npx agentproofs tail`**:
 ```
      1 ✓ 2026-04-06 11:29:00 session_started "Session started"
      2 ✓ 2026-04-06 11:29:00 tool_started Bash "npm install express"
      3 ✓ 2026-04-06 11:29:00 tool_completed Bash "npm install express" 4200ms
      4 ✓ 2026-04-06 11:29:00 tool_completed Write "create src/server.ts" 30ms
-     5 ✓ 2026-04-06 11:29:00 tool_completed Write "create src/routes/auth.ts" 25ms
-     6 ✓ 2026-04-06 11:29:00 decision "Use JWT over session cookies"
-     7 ✓ 2026-04-06 11:29:00 tool_completed Edit "edit src/middleware/auth.ts" 15ms
-     8 ✓ 2026-04-06 11:29:00 tool_started Bash "npm test"
-     9 ✗ 2026-04-06 11:29:00 tool_failed Bash "npm test" 8500ms
-    10 ✓ 2026-04-06 11:29:00 tool_completed Edit "fix test assertions" 10ms
-    11 ✓ 2026-04-06 11:29:00 tool_completed Bash "npm test" 7200ms
-    12 ✓ 2026-04-06 11:29:00 session_ended "Session ended"
+     5 ✓ 2026-04-06 11:29:00 decision "Use JWT over session cookies"
+     6 ✗ 2026-04-06 11:29:00 tool_failed Bash "npm test" 8500ms
+     7 ✓ 2026-04-06 11:29:00 tool_completed Edit "fix test assertions" 10ms
+     8 ✓ 2026-04-06 11:29:00 tool_completed Bash "npm test" 7200ms
 ```
 
-Every line is a signed proof. The ✗ on line 9 shows a failed `npm test` — the agent then fixed the tests (line 10) and re-ran them (line 11). The full story is preserved.
-
-**`npx agentproofs verify`** — cryptographically verify the entire chain:
-
+**`npx agentproofs verify`**:
 ```
-✓ Chain valid: 12 proofs verified
+✓ Chain valid: 8 proofs verified
   Trust level: L0 (local, key integrity assumed)
   No tampering detected.
 ```
 
-**`npx agentproofs stats`** — see what your agent has been doing:
+## Layer 2: AgentTrace (Observability)
+
+Existing tools (LangSmith, Langfuse, Helicone) trace **LLM calls** — prompt in, completion out. AgentTrace traces **agent decisions** — why an agent chose tool X over tool Y, where tokens were wasted, and which delegations were worth the money.
+
+### Decision tree, not call log
 
 ```
-Chain Statistics
-  Total proofs: 12
-
-  By event type:
-    tool_completed           6
-    tool_started             2
-    session_started          1
-    decision                 1
-    tool_failed              1
-    session_ended            1
-
-  By tool:
-    Bash                     5
-    Write                    2
-    Edit                     2
+Session ($1.97, 42% waste)
+├── Research Agent ($0.54, 55% waste)
+│   ├── Read package.json — dead_end ($0.03)
+│   ├── Read tsconfig.json — dead_end ($0.03)
+│   ├── ...6 more irrelevant files...
+│   ├── Read auth/middleware.ts — success ($0.03)
+│   └── Read auth/providers.ts — success ($0.03)
+├── Docs Agent ($0.38, 45% waste)
+│   ├── Fetch next-auth.js.org — success ($0.06)
+│   ├── Fetch auth0.com/docs — redundant ($0.06)
+│   └── ...3 more redundant fetches...
+└── Implementation Agent ($0.68, 13% waste)
+    ├── Write oauth.ts — success ($0.12)
+    ├── Bash: npm test — failure ($0.08)
+    ├── Edit oauth.ts — success ($0.11)
+    └── Bash: npm test — success ($0.08)
 ```
 
-**`npx agentproofs query --failed`** — find what went wrong:
+### Recommendations with projected savings
 
-```
-Showing 1 of 1 proofs
+Every finding includes:
+- **Specific action** to take (not vague advice)
+- **Type**: config / prompt / workflow / tool_choice
+- **Effort**: trivial / easy / moderate
+- **Projected weekly savings** (based on ~5 similar sessions/week)
+- **Confidence score** with evidence trail
 
-     9 ✗ 2026-04-06 11:29:00 tool_failed Bash "npm test"
-```
+Mark a recommendation as "applied" and AgentTrace tracks whether your waste actually decreased in subsequent sessions.
+
+### Key features
+
+| Feature | Description |
+|---------|-------------|
+| **Decision Tree** | Visualize agent reasoning paths, not just API calls |
+| **Cost Attribution** | Per-decision and per-agent cost breakdown |
+| **Waste Detection** | Dead-end exploration, retry loops, redundant work |
+| **Confidence Scores** | Every finding has a confidence score + evidence |
+| **Recommendations** | Specific actions with effort level and projected savings |
+| **Before/After Tracking** | Mark as applied, measure real savings over time |
+| **Zero-Code Integration** | Claude Code hook auto-traces every session |
 
 ## Who is this for?
 
+- **Developers spending $100+/month on AI agents** who want to know where the money goes
 - **Teams using AI agents** who need accountability for what the AI did
 - **Regulated industries** that need audit trails (finance, healthcare, legal)
 - **Security-conscious developers** who want tamper-evident logs
 - **Companies preparing for EU AI Act** (Articles 12/19 logging obligations)
-- **Anyone who wants to answer**: "what did the AI agent actually do?"
 
-## How it works
+## Architecture
 
-1. **`npx agentproofs init`** generates an Ed25519 keypair — your agent's cryptographic identity
-2. **Hooks** capture every tool call automatically (PreToolUse + PostToolUse + Stop)
-3. **Each event** is hashed (SHA-256) and signed (Ed25519), linking to the previous proof's hash
-4. **A single-writer daemon** serializes all writes — no race conditions, even with parallel agents
-5. **Privacy by default** — only hashes of input/output are stored, not the actual content
+```
+packages/
+  Proof chain:  hooks → daemon → JSONL segments (signed, hash-linked)
+  AgentTrace:   session logs → parser → decision tree → waste analysis → recommendations
+  Dashboard:    proof viewer + cost summary + agent breakdown + insights panel
+```
 
-### Privacy
+### Proof chain internals
+
+```
+Hooks/SDK  →  Unix socket  →  Daemon (single writer)  →  JSONL segments
+                                |— assign sequence
+                                |— compute canonical hash
+                                |— sign (Ed25519)
+                                |— append + fsync
+```
+
+### AgentTrace internals
+
+```
+Session JSONL  →  Parser  →  Decision tree  →  Waste analyzer  →  Insights
+                                |— token attribution per decision
+                                |— delegation tree nesting
+                                |— cost calculation (Anthropic/OpenAI/Google pricing)
+```
+
+### Model pricing built-in
+
+- **Anthropic**: Claude Opus 4.6, Sonnet 4.6, Haiku 4.5
+- **OpenAI**: GPT-5.3, GPT-5.3-Codex, o3
+- **Google**: Gemini 2.5 Pro, Gemini 2.5 Flash
+
+## Privacy
 
 | Data | Stored? | How |
 |------|---------|-----|
 | Tool name | Yes | Plain text |
-| Input content | **No** | Only SHA-256 hash |
-| Output content | **No** | Only SHA-256 hash |
+| Input content | **No** | Only SHA-256 hash (proof chain) |
+| Output content | **No** | Only SHA-256 hash (proof chain) |
+| Token counts | Yes | Per-decision attribution (trace) |
+| Cost data | Yes | Calculated from token counts |
 | Summaries | Optional | Opt-in per event |
-| Working directory | Yes | Plain text |
-| Timestamp | Yes | ISO 8601 UTC |
-
-To prove what happened without revealing content: show the proof entry (with `input_hash`), and the auditor computes SHA-256 of the claimed input. Hashes match = proven.
-
-## Threat model — be honest
-
-agentproofs is tamper-**evident**, not tamper-**proof**. Here's exactly what it protects against:
-
-| Threat | Protected? |
-|--------|-----------|
-| Someone edits the log after the fact (without key access) | **Yes** — hash chain breaks |
-| Someone deletes log entries | **Yes** — sequence gaps detected |
-| Someone inserts fake entries | **Yes** — hash linkage breaks |
-| Someone forges proofs from outside | **Yes** — signature check fails |
-| Attacker with access to the signing key | **No (v1)** — they can rewrite the chain |
-| Events that were never captured | **No** �� can't prove what wasn't logged |
-
-**Trust level L0 (v1):** Tamper-evident on host, assuming key integrity. Good for team accountability and personal audit trails. Future versions add external anchoring (L1), hardware-backed keys (L2), and federated witnesses (L3).
 
 ## CLI reference
 
@@ -159,11 +202,9 @@ npx agentproofs [command] [options]
 | `stats` | Show chain statistics |
 | `tail [-n count]` | Show latest proofs |
 | `query [filters]` | Search proofs |
-| `show <id>` | Show single proof detail |
 | `export [options]` | Export proofs for audit |
+| `trace <file>` | Parse session and generate cost report |
 | `pubkey` | Print public key (share with auditors) |
-| `keys` | List keys |
-| `segments` | List chain segments |
 
 ### Query filters
 
@@ -173,16 +214,6 @@ npx agentproofs query --failed             # only failures
 npx agentproofs query --type decision      # by event type
 npx agentproofs query --from 2026-04-01    # by date
 npx agentproofs query --namespace my-app   # by project
-npx agentproofs query --limit 100 --asc    # pagination + sort
-```
-
-### Export
-
-```bash
-npx agentproofs export                     # JSONL (default)
-npx agentproofs export --format csv        # CSV for spreadsheets
-npx agentproofs export --format json       # JSON array
-npx agentproofs export --sign              # signed export (auditor can verify)
 ```
 
 ## MCP Server
@@ -202,48 +233,11 @@ agentproofs also runs as an MCP server, so AI agents can log and query proofs di
 
 **Tools:** `proof_log`, `proof_verify`, `proof_query`, `proof_export`
 
-**Resources:** `proofs://chain`, `proofs://stats`, `proofs://latest`
-
-## Event types
-
-agentproofs captures 18 event types covering the full agent lifecycle:
-
-| Category | Events |
-|----------|--------|
-| **Session** | `session_started`, `session_ended` |
-| **Tools** | `tool_started`, `tool_completed`, `tool_failed`, `tool_denied` |
-| **Decisions** | `decision` |
-| **Delegation** | `delegation_started`, `delegation_completed` |
-| **Approval** | `approval_requested`, `approval_granted`, `approval_denied` |
-| **Policy** | `policy_violation` |
-| **System** | `checkpoint_created`, `key_rotated`, `daemon_started`, `daemon_stopped`, `error` |
-
-## Architecture
-
-```
-Hooks/SDK  →  Unix socket  →  Daemon (single writer)  →  JSONL segments
-                                |— assign sequence
-                                |— compute canonical hash
-                                |— sign (Ed25519)
-                                |— append + fsync
-```
-
-Storage layout:
-```
-~/.agentproofs/
-  segments/         Append-only JSONL proof chain
-  manifests/        Signed segment digests
-  keys/             Ed25519 keypair
-  exports/          Audit exports
-```
-
 ## EU AI Act
 
-agentproofs is designed to support the logging and traceability obligations under EU AI Act Articles 12 and 19, where applicable. It is **not** a compliance certification — compliance depends on the risk classification of your specific use case (see Article 6). agentproofs provides the mechanism; the obligation depends on classification.
+agentproofs is designed to support the logging and traceability obligations under EU AI Act Articles 12 and 19. It is **not** a compliance certification — compliance depends on the risk classification of your specific use case. agentproofs provides the mechanism; the obligation depends on classification.
 
 ## Configuration
-
-All via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -256,7 +250,7 @@ All via environment variables:
 
 ```bash
 npm install
-npm test          # 132 tests
+npm test          # 243 tests
 npm run build     # TypeScript → dist/
 npm run typecheck # Type verification
 ```
